@@ -691,7 +691,7 @@ class BlogModelArticle extends JModelAdmin
 	 *
 	 * @since    3.0
 	 */
-	protected function preprocessForm(JForm $form, $data, $group = 'blog')
+	protected function preprocessForm(JForm $form, $data, $group = 'content')
 	{
 		// Association blog items
 		$app = JFactory::getApplication();
