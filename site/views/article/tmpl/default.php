@@ -12,13 +12,25 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
-$params  = $this->item->params;
-$images  = json_decode($this->item->images);
-$urls    = json_decode($this->item->urls);
-$canEdit = $params->get('access-edit');
-$user    = JFactory::getUser();
-$info    = $params->get('info_block_position', 0);
+$params		= $this->item->params;
+$images		= json_decode($this->item->images);
+$urls			= json_decode($this->item->urls);
+$canEdit	= $params->get('access-edit');
+$doc			= JFactory::getDocument();
+$user			= JFactory::getUser();
+$info			= $params->get('info_block_position', 0);
 JHtml::_('behavior.caption');
+
+if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exists(JPATH_BASE . '/' . $images->image_fulltext))
+{
+	$img_path	= pathinfo($images->image_fulltext, PATHINFO_DIRNAME);
+	$img_base	= pathinfo($images->image_fulltext, PATHINFO_BASENAME);
+	$lrg_path	= JUri::base() . $img_path . '/' . $img_base;
+	list($img_width, $img_height)	= @getimagesize($lrg_path);
+	$doc->addCustomTag('<meta property="og:image" content="' . $lrg_path . '" />');
+	$doc->addCustomTag('<meta property="og:image:width" content="'.$img_width.'" />');
+	$doc->addCustomTag('<meta property="og:image:height" content="'.$img_height.'" />');
+}
 ?>
 <div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="http://schema.org/Article">
 	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? JFactory::getConfig()->get('language') : $this->item->language; ?>" />
