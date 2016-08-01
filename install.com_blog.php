@@ -39,8 +39,8 @@ class com_blogInstallerScript
 		// Possible routes: install, update, discover_install
 		if($route == 'install')
 		{
-			// jimport('joomla.filesystem.folder');
-			// JFolder::create(JPATH_SITE . '/images/stories');
+			jimport('joomla.filesystem.folder');
+			JFolder::create(JPATH_SITE . '/images/blog/gallery');
 			
 			// Create categories for our component
 			$base_path	= JPATH_ADMINISTRATOR . '/components/com_categories';

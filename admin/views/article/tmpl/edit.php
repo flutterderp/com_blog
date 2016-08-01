@@ -126,6 +126,17 @@ JFactory::getDocument()->addScriptDeclaration('
 		</div>
 		<?php echo JHtml::_('bootstrap.endTab'); ?>
 
+		<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'imagegallery', JText::_('COM_BLOG_FIELDSET_IMAGEGALLERY', true)); ?>
+			<div class="row-fluid form-horizontal-desktop">
+				<div class="span6">
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('gallery'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('gallery'); ?></div>
+					</div>
+				</div>
+			</div>
+		<?php echo JHtml::_('bootstrap.endTab'); ?>
+
 		<?php // Do not show the publishing options if the edit form is configured not to. ?>
 		<?php if ($params->show_publishing_options == 1) : ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'publishing', JText::_('COM_BLOG_FIELDSET_PUBLISHING', true)); ?>

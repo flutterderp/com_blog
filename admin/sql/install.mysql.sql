@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `#__blog` (
   `introtext` mediumtext NOT NULL,
   `fulltext` mediumtext NOT NULL,
   `secondary_categories` mediumtext NOT NULL,
+	`gallery` text NOT NULL COMMENT 'A Subform-driven pseudo image gallery.',
   `extra1` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
   `extra2` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
   `extra3` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',

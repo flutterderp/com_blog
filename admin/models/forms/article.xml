@@ -29,6 +29,11 @@
 			description="COM_BLOG_FIELD_SECONDARY_CATEGORIES_DESC"
 			size="20" extension="com_blog" multiple="true" />
 
+		<field name="gallery" type="subform" 
+			formsource="administrator/components/com_blog/models/forms/subform_gallery.xml" min="1" max="8" multiple="true"
+			layout="joomla.form.field.subform.repeatable" groupByFieldset="true"
+			label="COM_BLOG_FIELD_GALLERY_LABEL" description="COM_BLOG_FIELD_GALLERY_DESC" />
+
 		<field name="extra1" type="text" label="COM_BLOG_FIELD_EXTRA1_LABEL"
 			description="COM_BLOG_FIELD_EXTRA1_DESC" size="20" />
 

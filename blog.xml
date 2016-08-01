@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>michael@hendrixweb.net</authorEmail>
 	<authorUrl>www.hendrixweb.net</authorUrl>
-	<version>3.0.3</version>
+	<version>3.0.5</version>
 	
 	<description>com_blog_xml_description</description>
 	
@@ -17,6 +17,11 @@
 			<file driver="mysql" charset="utf8">sql/install.mysql.sql</file>
 		</sql>
 	</install>
+	<update> <!-- Runs on update -->
+		<schemas>
+			<schemapath type="mysql">sql/updates/mysql</schemapath>
+		</schemas>
+	</update>
 	<uninstall> <!-- Runs on uninstall -->
 		<sql>
 			<file driver="mysql" charset="utf8">sql/uninstall.mysql.sql</file>

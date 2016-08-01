@@ -153,6 +153,13 @@ class JTableBlog extends JTable
 			$array['metadata'] = (string) $registry;
 		}
 
+		if (isset($array['gallery']) && is_array($array['gallery']))
+		{
+			$registry = new Registry;
+			$registry->loadArray($array['gallery']);
+			$array['gallery'] = (string) $registry;
+		}
+
 		// Bind the rules.
 		if (isset($array['rules']) && is_array($array['rules']))
 		{
