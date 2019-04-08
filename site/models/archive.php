@@ -3,13 +3,15 @@
  * @package     Joomla.Site
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
-require_once __DIR__ . '/articles.php';
+use Joomla\Utilities\ArrayHelper;
+
+JLoader::register('BlogModelArticles', __DIR__ . '/articles.php');
 
 /**
  * Blog Component Archive Model
@@ -33,7 +35,7 @@ class BlogModelArchive extends BlogModelArticles
 	 * @param   string  $ordering   The field to order on.
 	 * @param   string  $direction  The direction to order on.
 	 *
-	 * @return  void.
+	 * @return  void
 	 *
 	 * @since   1.6
 	 */
@@ -60,6 +62,16 @@ class BlogModelArchive extends BlogModelArticles
 		$itemid = $app->input->get('Itemid', 0, 'int');
 		$limit = $app->getUserStateFromRequest('com_blog.archive.list' . $itemid . '.limit', 'limit', $params->get('display_num'), 'uint');
 		$this->setState('list.limit', $limit);
+
+		// Set the archive ordering
+		$articleOrderby   = $params->get('orderby_sec', 'rdate');
+		$articleOrderDate = $params->get('order_date');
+
+		// No category ordering
+		$secondary = BlogHelperQuery::orderbySecondary($articleOrderby, $articleOrderDate);
+
+		$this->setState('list.ordering', $secondary . ', a.created DESC');
+		$this->setState('list.direction', '');
 	}
 
 	/**
@@ -71,19 +83,11 @@ class BlogModelArchive extends BlogModelArticles
 	 */
 	protected function getListQuery()
 	{
-		// Set the archive ordering
-		$params = $this->state->params;
-		$articleOrderby = $params->get('orderby_sec', 'rdate');
+		$params           = $this->state->params;
+		$app              = JFactory::getApplication('site');
+		$catids           = ArrayHelper::toInteger($app->input->get('catid', array(), 'array'));
+		$catids           = array_values(array_diff($catids, array(0)));
 		$articleOrderDate = $params->get('order_date');
-
-		// No category ordering
-		$categoryOrderby = '';
-		$secondary = BlogHelperQuery::orderbySecondary($articleOrderby, $articleOrderDate) . ', ';
-		$primary = BlogHelperQuery::orderbyPrimary($categoryOrderby);
-
-		$orderby = $primary . ' ' . $secondary . ' a.created DESC ';
-		$this->setState('list.ordering', $orderby);
-		$this->setState('list.direction', '');
 
 		// Create a new query object.
 		$query = parent::getListQuery();
@@ -123,6 +127,11 @@ class BlogModelArchive extends BlogModelArticles
 			$query->where($query->year($queryDate) . ' = ' . $year);
 		}
 
+		if (count($catids) > 0)
+		{
+			$query->where('c.id IN (' . implode(', ', $catids) . ')');
+		}
+
 		return $query;
 	}
 
@@ -136,7 +145,7 @@ class BlogModelArchive extends BlogModelArticles
 	{
 		$app = JFactory::getApplication();
 
-		// Lets load the blog if it doesn't already exist
+		// Lets load the content if it doesn't already exist
 		if (empty($this->_data))
 		{
 			// Get the page/component configuration
@@ -163,7 +172,7 @@ class BlogModelArchive extends BlogModelArticles
 	 *
 	 * @return  array  An array of results.
 	 *
-	 * @since   12.2
+	 * @since   3.0.1
 	 * @throws  RuntimeException
 	 */
 	protected function _getList($query, $limitstart=0, $limit=0)
@@ -179,5 +188,32 @@ class BlogModelArchive extends BlogModelArticles
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Gets the archived articles years
+	 *
+	 * @return   array
+	 *
+	 * @since    3.6.0
+	 */
+	public function getYears()
+	{
+		$db = $this->getDbo();
+		$nullDate = $db->quote($db->getNullDate());
+		$nowDate  = $db->quote(JFactory::getDate()->toSql());
+
+		$query = $db->getQuery(true);
+		$years = $query->year($db->qn('created'));
+		$query->select('DISTINCT (' . $years . ')')
+			->from($db->qn('#__blog'))
+			->where($db->qn('state') . '= 2')
+			->where('(publish_up = ' . $nullDate . ' OR publish_up <= ' . $nowDate . ')')
+			->where('(publish_down = ' . $nullDate . ' OR publish_down >= ' . $nowDate . ')')
+			->order('1 ASC');
+
+		$db->setQuery($query);
+
+		return $db->loadColumn();
 	}
 }

@@ -2,19 +2,18 @@
 <form>
 	<fieldset name="gallery-subform">
 		<field name="gallery_image" type="media" label="COM_BLOG_SUBFORM_FIELD_IMAGE_LABEL"
-			description="COM_BLOG_SUBFORM_FIELD_IMAGE_DESC" size="20"
-			directory="blog/gallery" />
+			description="COM_BLOG_SUBFORM_FIELD_IMAGE_DESC" directory="blog/gallery" />
 
-		<field name="gallery_featured" type="list" class="advancedSelect chzn-color-state"
+		<!-- <field name="gallery_featured" type="list" class="advancedSelect chzn-color-state"
 			label="COM_BLOG_SUBFORM_FIELD_FEATURED_LABEL"
 			description="COM_BLOG_SUBFORM_FIELD_FEATURED_DESC" default="0">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
-		</field>
+		</field> -->
 
 		<field name="gallery_caption" type="textarea" label="COM_BLOG_SUBFORM_FIELD_CAPTION_LABEL"
-			description="COM_BLOG_SUBFORM_FIELD_CAPTION_DESC" size="20" rows="5"
-			filter="safehtml" />
+			description="COM_BLOG_SUBFORM_FIELD_CAPTION_DESC" rows="5"
+			filter="string" />
 
 	</fieldset>
 </form>

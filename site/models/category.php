@@ -3,13 +3,14 @@
  * @package     Joomla.Site
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * This models supports retrieving a category, the articles associated with the category,
@@ -86,7 +87,8 @@ class BlogModelCategory extends JModelList
 				'hits', 'a.hits',
 				'publish_up', 'a.publish_up',
 				'publish_down', 'a.publish_down',
-				'author', 'a.author'
+				'author', 'a.author',
+				'filter_tag'
 			);
 		}
 
@@ -101,7 +103,7 @@ class BlogModelCategory extends JModelList
 	 * @param   string  $ordering   The field to order on.
 	 * @param   string  $direction  The direction to order on.
 	 *
-	 * @return  void.
+	 * @return  void
 	 *
 	 * @since   1.6
 	 */
@@ -127,10 +129,6 @@ class BlogModelCategory extends JModelList
 		$this->setState('params', $mergedParams);
 		$user  = JFactory::getUser();
 
-		// Create a new query object.
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
-
 		$asset = 'com_blog';
 
 		if ($pk)
@@ -142,13 +140,6 @@ class BlogModelCategory extends JModelList
 		{
 			// Limit to published for people who can't edit or edit.state.
 			$this->setState('filter.published', 1);
-
-			// Filter by start and end dates.
-			$nullDate = $db->quote($db->getNullDate());
-			$nowDate = $db->quote(JFactory::getDate()->toSql());
-
-			$query->where('(a.publish_up = ' . $nullDate . ' OR a.publish_up <= ' . $nowDate . ')')
-				->where('(a.publish_down = ' . $nullDate . ' OR a.publish_down >= ' . $nowDate . ')');
 		}
 		else
 		{
@@ -165,11 +156,16 @@ class BlogModelCategory extends JModelList
 			$this->setState('filter.access', false);
 		}
 
+		$itemid = $app->input->get('id', 0, 'int') . ':' . $app->input->get('Itemid', 0, 'int');
+
+		$value = $this->getUserStateFromRequest('com_blog.category.filter.' . $itemid . '.tag', 'filter_tag', 0, 'int', false);
+		$this->setState('filter.tag', $value);
+
 		// Optional filter text
-		$this->setState('list.filter', $app->input->getString('filter-search'));
+		$search = $app->getUserStateFromRequest('com_blog.category.list.' . $itemid . '.filter-search', 'filter-search', '', 'string');
+		$this->setState('list.filter', $search);
 
 		// Filter.order
-		$itemid = $app->input->get('id', 0, 'int') . ':' . $app->input->get('Itemid', 0, 'int');
 		$orderCol = $app->getUserStateFromRequest('com_blog.category.list.' . $itemid . '.filter_order', 'filter_order', '', 'string');
 
 		if (!in_array($orderCol, $this->filter_fields))
@@ -191,7 +187,7 @@ class BlogModelCategory extends JModelList
 		$this->setState('list.start', $app->input->get('limitstart', 0, 'uint'));
 
 		// Set limit for query. If list, use parameter. If blog, add blog parameters for limit.
-		if (($app->input->get('layout') == 'blog') || $params->get('layout_type') == 'blog')
+		if (($app->input->get('layout') === 'blog') || $params->get('layout_type') === 'blog')
 		{
 			$limit = $params->get('num_leading_articles') + $params->get('num_intro_articles') + $params->get('num_links');
 			$this->setState('list.links', $params->get('num_links'));
@@ -204,11 +200,11 @@ class BlogModelCategory extends JModelList
 		$this->setState('list.limit', $limit);
 
 		// Set the depth of the category query based on parameter
-		$showSubcategories = $params->get('show_subcategory_content', '0');
+		$showSubcategories = $params->get('show_subcategory_blog', '0');
 
 		if ($showSubcategories)
 		{
-			$this->setState('filter.max_category_levels', $params->get('show_subcategory_content', '1'));
+			$this->setState('filter.max_category_levels', $params->get('show_subcategory_blog', '1'));
 			$this->setState('filter.subcategories', true);
 		}
 
@@ -245,6 +241,7 @@ class BlogModelCategory extends JModelList
 			$model->setState('list.limit', $limit);
 			$model->setState('list.direction', $this->getState('list.direction'));
 			$model->setState('list.filter', $this->getState('list.filter'));
+			$model->setState('filter.tag', $this->getState('filter.tag'));
 
 			// Filter.subcategories indicates whether to include articles from subcategories in the list or blog
 			$model->setState('filter.subcategories', $this->getState('filter.subcategories'));
@@ -319,7 +316,7 @@ class BlogModelCategory extends JModelList
 	 *
 	 * @return  JPagination  A JPagination object for the data set.
 	 *
-	 * @since   12.2
+	 * @since   3.0.1
 	 */
 	public function getPagination()
 	{
@@ -342,11 +339,12 @@ class BlogModelCategory extends JModelList
 	{
 		if (!is_object($this->_item))
 		{
-			if (isset( $this->state->params))
+			if (isset($this->state->params))
 			{
 				$params = $this->state->params;
 				$options = array();
 				$options['countItems'] = $params->get('show_cat_num_articles', 1) || !$params->get('show_empty_categories_cat', 0);
+				$options['access']     = $params->get('check_access_rights', 1);
 			}
 			else
 			{
@@ -456,14 +454,15 @@ class BlogModelCategory extends JModelList
 		}
 
 		// Order subcategories
-		if (count($this->_children))
+		if ($this->_children)
 		{
 			$params = $this->getState()->get('params');
 
-			if ($params->get('orderby_pri') == 'alpha' || $params->get('orderby_pri') == 'ralpha')
+			$orderByPri = $params->get('orderby_pri');
+
+			if ($orderByPri === 'alpha' || $orderByPri === 'ralpha')
 			{
-				jimport('joomla.utilities.arrayhelper');
-				JArrayHelper::sortObjects($this->_children, 'title', ($params->get('orderby_pri') == 'alpha') ? 1 : (-1));
+				$this->_children = ArrayHelper::sortObjects($this->_children, 'title', ($orderByPri === 'alpha') ? 1 : (-1));
 			}
 		}
 

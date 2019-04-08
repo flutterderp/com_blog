@@ -3,13 +3,13 @@
  * @package     Joomla.Administrator
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
-require_once __DIR__ . '/articles.php';
+JLoader::register('BlogControllerArticles', __DIR__ . '/articles.php');
 
 /**
  * Featured content controller class.
@@ -28,7 +28,7 @@ class BlogControllerFeatured extends BlogControllerArticles
 	public function delete()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		$user = JFactory::getUser();
 		$ids  = $this->input->get('cid', array(), 'array');
@@ -51,6 +51,7 @@ class BlogControllerFeatured extends BlogControllerArticles
 		else
 		{
 			// Get the model.
+			/** @var BlogModelFeature $model */
 			$model = $this->getModel();
 
 			// Remove the items.
@@ -84,13 +85,12 @@ class BlogControllerFeatured extends BlogControllerArticles
 	 * @param   string  $prefix  The class prefix. Optional.
 	 * @param   array   $config  Configuration array for model. Optional.
 	 *
-	 * @return  object  The model.
+	 * @return  JModelLegacy  The model.
 	 *
 	 * @since   1.6
 	 */
 	public function getModel($name = 'Feature', $prefix = 'BlogModel', $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, $config);
-		return $model;
+		return parent::getModel($name, $prefix, $config);
 	}
 }

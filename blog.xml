@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.1" method="upgrade">
+<extension type="component" version="3.9" method="upgrade">
 	<name>com_blog</name>
-	<author>Hendrix Web</author>
-	<creationDate>Septermber 2015</creationDate>
-	<copyright>(C) 2005 - 2015 Open Source Matters. All rights reserved.</copyright>
+	<author>Joomla! Project</author>
+	<creationDate>April 2019</creationDate>
+	<copyright>(C) 2005 - 2019 Open Source Matters. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>michael@hendrixweb.net</authorEmail>
-	<authorUrl>www.hendrixweb.net</authorUrl>
-	<version>3.0.5</version>
-	
-	<description>com_blog_xml_description</description>
-	
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>3.0.9</version>
+	<description>COM_BLOG_XML_DESCRIPTION</description>
 	<scriptfile>install.com_blog.php</scriptfile>
 	<install> <!-- Runs on install -->
 		<sql>
@@ -27,55 +25,47 @@
 			<file driver="mysql" charset="utf8">sql/uninstall.mysql.sql</file>
 		</sql>
 	</uninstall>
-	
 	<files folder="site">
 		<filename>blog.php</filename>
 		<filename>controller.php</filename>
 		<filename>router.php</filename>
-		<filename>metadata.xml</filename>
+		<filename>LICENSE.txt</filename>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
 		<folder>language</folder>
-		<folder>layouts</folder>
 		<folder>models</folder>
 		<folder>views</folder>
 	</files>
-	
-	<languages folder="site/language">
-		<language tag="en-GB">en-GB/en-GB.com_blog.ini</language>
+	<languages folder="site">
+		<language tag="en-GB">language/en-GB.com_blog.ini</language>
 	</languages>
-	
 	<administration>
-		<menu img="class:content">com_blog</menu>
-		<submenu>
-			<!--
-				Note that all & must be escaped to &amp; for the file to be valid
-				XML and be parsed by the installer
-			-->
-			<menu link="option=com_blog&amp;task=article.add" view="article" img="class:content" alt="Blog/New Article">com_blog_add_article</menu>
-			<menu view="articles" img="class:content" alt="Blog/Links">com_blog_articles_links</menu>
-			<menu view="categories" link="option=com_categories&amp;extension=com_blog" img="class:content-cat" alt="Blog/Categories">com_blog_categories</menu>
-		</submenu>
-		
 		<files folder="admin">
-			<filename>access.xml</filename>
-			<filename>config.xml</filename>
 			<filename>config.defaults.min.json</filename>
 			<filename>config.defaults.json</filename>
 			<filename>blog.php</filename>
 			<filename>controller.php</filename>
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
 			<folder>controllers</folder>
 			<folder>helpers</folder>
 			<folder>language</folder>
+			<!-- <folder>layouts</folder> -->
 			<folder>models</folder>
 			<folder>sql</folder>
 			<folder>tables</folder>
 			<folder>views</folder>
 		</files>
-		
-		<languages folder="admin/language">
-			<language tag="en-GB">en-GB/en-GB.com_blog.ini</language>
-			<language tag="en-GB">en-GB/en-GB.com_blog.sys.ini</language>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_blog.ini</language>
+			<language tag="en-GB">language/en-GB.com_blog.sys.ini</language>
 		</languages>
+		<menu img="class:content">com_blog</menu>
+		<submenu>
+			<!-- Note that all & must be escaped to &amp; for the file to be valid XML and be parsed by the installer -->
+			<menu link="option=com_blog&amp;task=article.add" view="article" img="class:content" alt="Blog/New Article">com_blog_add_article</menu>
+			<menu view="articles" img="class:content" alt="Blog/Links">com_blog_articles_links</menu>
+			<menu view="categories" link="option=com_categories&amp;extension=com_blog" img="class:content-cat" alt="Blog/Categories">com_blog_categories</menu>
+		</submenu>
 	</administration>
 </extension>
