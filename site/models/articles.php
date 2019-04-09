@@ -330,7 +330,7 @@ class BlogModelArticles extends JModelList
 
 			// Add subcategory check
 			$includeSubcategories = $this->getState('filter.subcategories', false);
-			$categoryEquals       = 'a.catid ' . $type . (int) $categoryId;
+			$categoryEquals       = '(a.catid ' . $type . (int) $categoryId . ' OR FIND_IN_SET('.(int) $categoryId.', a.secondary_categories))';
 
 			if ($includeSubcategories)
 			{
