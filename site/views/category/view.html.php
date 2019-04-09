@@ -280,6 +280,8 @@ class BlogViewCategory extends JViewCategory
 			}
 		}
 
+		$this->document->addStyleSheet(JUri::root() . 'media/com_blog/css/article-styles.css');
+
 		parent::addFeed();
 	}
 }
