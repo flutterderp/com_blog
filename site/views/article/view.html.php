@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 /**
  * HTML Article View class for the Blog component
  *
@@ -188,6 +190,15 @@ class BlogViewArticle extends JViewLegacy
 			$item->associations = BlogHelperAssociation::displayAssociations($item->id);
 		}
 
+		require_once(JPATH_COMPONENT . '/helpers/embedvideo.php');
+		if(!empty($item->video_uri))
+		{
+			$item->video = BlogHelperEmbedVideo::embedUrl($item->video_uri);
+		}
+
+		$registry      = new Registry($item->gallery);
+		$item->gallery = $registry->toArray();
+
 		// Process the content plugins.
 		JPluginHelper::importPlugin('content');
 		$dispatcher->trigger('onContentPrepare', array ('com_blog.article', &$item, &$item->params, $offset));
@@ -332,6 +343,8 @@ class BlogViewArticle extends JViewLegacy
 				$this->item->page_title . ' - ' . JText::sprintf('PLG_CONTENT_PAGEBREAK_PAGE_NUM', $this->state->get('list.offset') + 1)
 			);
 		}
+
+		$this->document->addStyleSheet(JUri::root() . 'media/com_blog/css/article-styles.css');
 
 		if ($this->print)
 		{

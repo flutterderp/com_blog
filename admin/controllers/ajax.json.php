@@ -56,7 +56,7 @@ class BlogControllerAjax extends JControllerLegacy
 			unset($associations[$excludeLang]);
 
 			// Add the title to each of the associated records
-			$contentTable = JTable::getInstance('Blog', 'JTable');
+			$contentTable = JTable::getInstance('Blog', 'Joomla\\CMS\\Table\\');
 
 			foreach ($associations as $lang => $association)
 			{

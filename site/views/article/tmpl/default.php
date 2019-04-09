@@ -12,12 +12,15 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
-$params  = $this->item->params;
-$images  = json_decode($this->item->images);
-$urls    = json_decode($this->item->urls);
-$canEdit = $params->get('access-edit');
-$user    = JFactory::getUser();
-$info    = $params->get('info_block_position', 0);
+$doc        = JFactory::getDocument();
+$params     = $this->item->params;
+$tpl        = JFactory::getApplication()->getTemplate($tpl_params = true);
+$tpl_params = $tpl->params;
+$images     = json_decode($this->item->images);
+$urls       = json_decode($this->item->urls);
+$canEdit    = $params->get('access-edit');
+$user       = JFactory::getUser();
+$info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
 $assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associations'));
@@ -26,6 +29,23 @@ JHtml::_('behavior.caption');
 ?>
 <div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Article">
 	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? JFactory::getConfig()->get('language') : $this->item->language; ?>" />
+	<link itemprop="mainEntityOfPage" href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
+	<meta itemprop="author" content="<?php echo $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author; ?>">
+	<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+		<meta itemprop="name" content="<?php echo $this->escape($tpl_params->get('publisher_name', $this->item->author)); ?>">
+		<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+			<meta itemprop="url" content="<?php echo $tpl_params->get('logo', 'https://via.placeholder.com/150x150/ccc/ccc.png?text=logo'); ?>">
+		</span>
+	</span>
+
+	<?php if(!$params->get('show_modify_date')) : ?>
+		<time datetime="<?php echo JHtml::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+	<?php endif; ?>
+
+	<?php if(!$params->get('show_publish_date')) : ?>
+		<time datetime="<?php echo JHtml::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+	<?php endif; ?>
+
 	<?php if ($this->params->get('show_page_heading')) : ?>
 	<div class="page-header">
 		<h1> <?php echo $this->escape($this->params->get('page_heading')); ?> </h1>
@@ -50,10 +70,11 @@ JHtml::_('behavior.caption');
 	<?php if ($params->get('show_title') || $params->get('show_author')) : ?>
 	<div class="page-header">
 		<?php if ($params->get('show_title')) : ?>
-			<h2 itemprop="headline">
-				<?php echo $this->escape($this->item->title); ?>
-			</h2>
+			<h2 itemprop="headline"><?php echo $this->escape($this->item->title); ?></h2>
+		<?php else : ?>
+			<meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
 		<?php endif; ?>
+
 		<?php if ($this->item->state == 0) : ?>
 			<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
 		<?php endif; ?>
@@ -109,7 +130,26 @@ JHtml::_('behavior.caption');
 		echo $this->item->toc;
 	endif; ?>
 	<div itemprop="articleBody">
+		<?php if(!empty($this->item->video->uri)) : ?>
+			<div class="videowrapper">
+				<iframe src="<?php echo $this->item->video->uri; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+			</div>
+		<?php endif; ?>
+
 		<?php echo $this->item->text; ?>
+
+		<?php if ($params->get('show_image_gallery_frontend') && !empty($this->item->gallery)) : ?>
+			<div class="row small-up-2 medium-up-3 large-up-4" data-equalizer>
+				<?php foreach($this->item->gallery as $img) : ?>
+					<div class="column" data-equalizer-watch>
+						<a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
+							rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
+							<img src="<?php echo JUri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
+						</a>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<?php if ($info == 1 || $info == 2) : ?>

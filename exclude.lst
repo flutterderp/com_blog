@@ -1,6 +1,6 @@
 create-package.sh
 exclude.lst
-._*
+*._*
 *.git*
 *.svn*
 *.DS_Store

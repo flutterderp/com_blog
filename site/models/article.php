@@ -91,6 +91,7 @@ class BlogModelArticle extends JModelItem
 					->select(
 						$this->getState(
 							'item.select', 'a.id, a.asset_id, a.title, a.alias, a.introtext, a.fulltext, ' .
+							'a.gallery, a.video_uri, a.sources, ' .
 							'a.state, a.catid, a.created, a.created_by, a.created_by_alias, ' .
 							// Use created if modified is 0
 							'CASE WHEN a.modified = ' . $db->quote($db->getNullDate()) . ' THEN a.created ELSE a.modified END as modified, ' .
@@ -250,7 +251,7 @@ class BlogModelArticle extends JModelItem
 		{
 			$pk = (!empty($pk)) ? $pk : (int) $this->getState('article.id');
 
-			$table = JTable::getInstance('Blog', 'JTable');
+			$table = JTable::getInstance('Blog', 'Joomla\\CMS\\Table\\');
 			$table->load($pk);
 			$table->hit($pk);
 		}

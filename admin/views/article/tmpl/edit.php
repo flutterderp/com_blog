@@ -67,11 +67,18 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 		<div class="row-fluid">
 			<div class="span9">
 				<fieldset class="adminform">
-					<?php echo $this->form->getInput('articletext'); ?>
+					<div class="control-group"><?php echo $this->form->getInput('articletext'); ?></div>
+
+					<div class="form-inline form-inline-header"><?php echo $this->form->renderField('video_uri'); ?></div>
+
+					<div class="control-group">
+						<?php echo $this->form->getLabel('gallery'); ?>
+						<?php echo $this->form->getInput('gallery'); ?>
+					</div>
 				</fieldset>
 			</div>
 			<div class="span3">
-				<?php echo JLayoutHelper::render('joomla.edit.global', $this); ?>
+				<?php echo JLayoutHelper::render('joomla.edit.global', $this, null, array('client' => 1)); ?>
 			</div>
 		</div>
 		<?php echo JHtml::_('bootstrap.endTab'); ?>

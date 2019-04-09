@@ -10,15 +10,35 @@
 defined('_JEXEC') or die;
 
 // Create a shortcut for params.
-$params = $this->item->params;
+$params     = $this->item->params;
+$tpl        = JFactory::getApplication()->getTemplate($tpl_params = true);
+$tpl_params = $tpl->params;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-$canEdit = $this->item->params->get('access-edit');
-$info    = $params->get('info_block_position', 0);
+$canEdit    = $this->item->params->get('access-edit');
+$info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
 $assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associations'));
 
 ?>
+<link itemprop="mainEntityOfPage" href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
+<meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
+<meta itemprop="author" content="<?php echo $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author; ?>">
+<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+	<meta itemprop="name" content="<?php echo $this->escape($tpl_params->get('publisher_name', $this->item->author)); ?>">
+	<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+		<meta itemprop="url" content="<?php echo $tpl_params->get('logo', 'https://via.placeholder.com/150x150/ccc/ccc.png?text=logo'); ?>">
+	</span>
+</span>
+
+<?php if(!$params->get('show_modify_date')) : ?>
+	<time datetime="<?php echo JHtml::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+<?php endif; ?>
+
+<?php if(!$params->get('show_publish_date')) : ?>
+	<time datetime="<?php echo JHtml::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+<?php endif; ?>
+
 <?php if ($this->item->state == 0 || strtotime($this->item->publish_up) > strtotime(JFactory::getDate())
 	|| ((strtotime($this->item->publish_down) < strtotime(JFactory::getDate())) && $this->item->publish_down != JFactory::getDbo()->getNullDate())) : ?>
 	<div class="system-unpublished">

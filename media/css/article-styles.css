@@ -1,0 +1,4 @@
+.videowrapper { /* background styles, etc. */ border: 0 solid #554832; margin: 0 auto 36px; position: relative; }
+.videowrapper::before, .videowrapper:before { content: ''; float: left; margin-left: -1px; padding: 56.25% 0 0 0; width: 1px; }
+.videowrapper::after, .videowrapper:after { clear: both; content: ''; display: table; }
+.videowrapper > embed, .videowrapper > iframe, .videowrapper > object { border: 0; height: 100%; margin: 0; max-width: unset; position: absolute; width: 100%; }

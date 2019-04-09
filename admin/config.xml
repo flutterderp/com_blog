@@ -27,7 +27,7 @@
 			<option value="0">JNO</option>
 		</field>
 
-		<field
+		<!-- <field
 			name="vlog_mode"
 			type="radio"
 			class="btn-group btn-group-yesno"
@@ -36,7 +36,7 @@
 			description="COM_BLOG_CONFIG_VLOG_MODE_DESC">
 			<option value="1">JSHOW</option>
 			<option value="0">JHIDE</option>
-		</field>
+		</field> -->
 
 		<field
 			name="show_title"

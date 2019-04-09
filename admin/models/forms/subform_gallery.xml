@@ -12,7 +12,7 @@
 		</field> -->
 
 		<field name="gallery_caption" type="textarea" label="COM_BLOG_SUBFORM_FIELD_CAPTION_LABEL"
-			description="COM_BLOG_SUBFORM_FIELD_CAPTION_DESC" rows="5"
+			description="COM_BLOG_SUBFORM_FIELD_CAPTION_DESC" rows="2"
 			filter="string" />
 
 	</fieldset>

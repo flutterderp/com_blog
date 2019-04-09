@@ -8,7 +8,7 @@
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
 	<version>3.0.9</version>
-	<description>COM_BLOG_XML_DESCRIPTION</description>
+	<description>com_blog_xml_description</description>
 	<scriptfile>install.com_blog.php</scriptfile>
 	<install> <!-- Runs on install -->
 		<sql>
@@ -39,6 +39,10 @@
 	<languages folder="site">
 		<language tag="en-GB">language/en-GB.com_blog.ini</language>
 	</languages>
+	<media destination="com_blog" folder="media">
+		<folder>css</folder>
+		<!-- <folder>js</folder> -->
+	</media>
 	<administration>
 		<files folder="admin">
 			<filename>config.defaults.min.json</filename>
@@ -50,7 +54,7 @@
 			<folder>controllers</folder>
 			<folder>helpers</folder>
 			<folder>language</folder>
-			<!-- <folder>layouts</folder> -->
+			<folder>layouts</folder>
 			<folder>models</folder>
 			<folder>sql</folder>
 			<folder>tables</folder>
@@ -63,9 +67,9 @@
 		<menu img="class:content">com_blog</menu>
 		<submenu>
 			<!-- Note that all & must be escaped to &amp; for the file to be valid XML and be parsed by the installer -->
-			<menu link="option=com_blog&amp;task=article.add" view="article" img="class:content" alt="Blog/New Article">com_blog_add_article</menu>
-			<menu view="articles" img="class:content" alt="Blog/Links">com_blog_articles_links</menu>
-			<menu view="categories" link="option=com_categories&amp;extension=com_blog" img="class:content-cat" alt="Blog/Categories">com_blog_categories</menu>
+			<menu link="option=com_blog&amp;task=article.add" view="article" img="class:content">mod_menu_com_blog_new_article</menu>
+			<menu view="articles" img="class:content">mod_menu_com_blog_article_manager</menu>
+			<menu view="categories" link="option=com_categories&amp;extension=com_blog" img="class:content-cat">mod_menu_com_blog_category_manager</menu>
 		</submenu>
 	</administration>
 </extension>

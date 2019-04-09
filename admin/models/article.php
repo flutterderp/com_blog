@@ -647,7 +647,7 @@ class BlogModelArticle extends JModelAdmin
 					$data['alias'] = JFilterOutput::stringURLSafe($data['title']);
 				}
 
-				$table = JTable::getInstance('Blog', 'JTable');
+				$table = JTable::getInstance('Blog', 'Joomla\\CMS\\Table\\');
 
 				if ($table->load(array('alias' => $data['alias'], 'catid' => $data['catid'])))
 				{
