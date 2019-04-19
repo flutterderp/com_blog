@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -19,12 +19,12 @@ class BlogTableFeatured extends JTable
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabaseDriver  &$db  Database connector object
+	 * @param   JDatabaseDriver  $db  Database connector object
 	 *
 	 * @since   1.6
 	 */
 	public function __construct(&$db)
 	{
-		parent::__construct('#__blog_frontpage', 'blog_id', $db);
+		parent::__construct('#__blog_frontpage', 'content_id', $db);
 	}
 }

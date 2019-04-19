@@ -3,17 +3,21 @@
  * @package     Joomla.Site
  * @subpackage  Layout
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-defined('_JEXEC') or die;
+defined('JPATH_BASE') or die;
+
+$app = JFactory::getApplication();
+$option = $app->input->get('option', 'com_content', 'string');
+$component = ucwords(str_ireplace('com_', '', $option));
+$helperRoute = $component . 'HelperRoute';
 ?>
 <ol class="nav nav-tabs nav-stacked">
 <?php foreach ($displayData->get('link_items') as $item) : ?>
 	<li>
-		<a href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)); ?>">
-			<?php echo $item->title; ?></a>
+		<?php echo JHtml::_('link', JRoute::_($helperRoute::getArticleRoute($item->slug, $item->catid, $item->language)), $item->title); ?>
 	</li>
 <?php endforeach; ?>
 </ol>

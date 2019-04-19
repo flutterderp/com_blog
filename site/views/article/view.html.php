@@ -3,11 +3,13 @@
  * @package     Joomla.Site
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
+
+use Joomla\Registry\Registry;
 
 /**
  * HTML Article View class for the Blog component
@@ -31,7 +33,7 @@ class BlogViewArticle extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed  A string if successful, otherwise a Error object.
+	 * @return  mixed  A string if successful, otherwise an Error object.
 	 */
 	public function display($tpl = null)
 	{
@@ -62,7 +64,7 @@ class BlogViewArticle extends JViewLegacy
 		$item->parent_slug = $item->parent_alias ? ($item->parent_id . ':' . $item->parent_alias) : $item->parent_id;
 
 		// No link for ROOT category
-		if ($item->parent_alias == 'root')
+		if ($item->parent_alias === 'root')
 		{
 			$item->parent_slug = null;
 		}
@@ -82,7 +84,7 @@ class BlogViewArticle extends JViewLegacy
 			$currentLink = $active->link;
 
 			// If the current view is the active item and an article view for this article, then the menu item params take priority
-			if (strpos($currentLink, 'view=article') && (strpos($currentLink, '&id=' . (string) $item->id)))
+			if (strpos($currentLink, 'view=article') && strpos($currentLink, '&id=' . (string) $item->id))
 			{
 				// Load layout from active query (in case it is an alternative menu item)
 				if (isset($active->query['layout']))
@@ -133,11 +135,40 @@ class BlogViewArticle extends JViewLegacy
 		// Check the view access to the article (the model has already computed the values).
 		if ($item->params->get('access-view') == false && ($item->params->get('show_noauth', '0') == '0'))
 		{
-			JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->setHeader('status', 403, true);
 
 			return;
 		}
 
+		/**
+		 * Check for no 'access-view' and empty fulltext,
+		 * - Redirect guest users to login
+		 * - Deny access to logged users with 403 code
+		 * NOTE: we do not recheck for no access-view + show_noauth disabled ... since it was checked above
+		 */
+		if ($item->params->get('access-view') == false && !strlen($item->fulltext))
+		{
+			if ($this->user->get('guest'))
+			{
+				$return = base64_encode(JUri::getInstance());
+				$login_url_with_return = JRoute::_('index.php?option=com_users&view=login&return=' . $return);
+				$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'notice');
+				$app->redirect($login_url_with_return, 403);
+			}
+			else
+			{
+				$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+				$app->setHeader('status', 403, true);
+
+				return;
+			}
+		}
+
+		/**
+		 * NOTE: The following code (usually) sets the text to contain the fulltext, but it is the
+		 * responsibility of the layout to check 'access-view' and only use "introtext" for guests
+		 */
 		if ($item->params->get('show_intro', '1') == '1')
 		{
 			$item->text = $item->introtext . ' ' . $item->fulltext;
@@ -154,8 +185,21 @@ class BlogViewArticle extends JViewLegacy
 		$item->tags = new JHelperTags;
 		$item->tags->getItemTags('com_blog.article', $this->item->id);
 
-		// Process the blog plugins.
+		if ($item->params->get('show_associations'))
+		{
+			$item->associations = BlogHelperAssociation::displayAssociations($item->id);
+		}
 
+		require_once(JPATH_COMPONENT . '/helpers/embedvideo.php');
+		if(!empty($item->video_uri))
+		{
+			$item->video = BlogHelperEmbedVideo::embedUrl($item->video_uri);
+		}
+
+		$registry      = new Registry($item->gallery);
+		$item->gallery = $registry->toArray();
+
+		// Process the content plugins.
 		JPluginHelper::importPlugin('content');
 		$dispatcher->trigger('onContentPrepare', array ('com_blog.article', &$item, &$item->params, $offset));
 
@@ -169,13 +213,6 @@ class BlogViewArticle extends JViewLegacy
 		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_blog.article', &$item, &$item->params, $offset));
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
-		// Increment the hit counter of the article.
-		if (!$this->params->get('intro_only') && $offset == 0)
-		{
-			$model = $this->getModel();
-			$model->hit();
-		}
-
 		// Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx'));
 
@@ -187,7 +224,7 @@ class BlogViewArticle extends JViewLegacy
 	/**
 	 * Prepares the document.
 	 *
-	 * @return  void.
+	 * @return  void
 	 */
 	protected function _prepareDocument()
 	{
@@ -196,8 +233,10 @@ class BlogViewArticle extends JViewLegacy
 		$pathway = $app->getPathway();
 		$title   = null;
 
-		// Because the application sets a default page title,
-		// we need to get it from the menu item itself
+		/**
+		 * Because the application sets a default page title,
+		 * we need to get it from the menu item itself
+		 */
 		$menu = $menus->getActive();
 
 		if ($menu)
@@ -214,18 +253,15 @@ class BlogViewArticle extends JViewLegacy
 		$id = (int) @$menu->query['id'];
 
 		// If the menu item does not concern this article
-		if ($menu && ($menu->query['option'] != 'com_blog' || $menu->query['view'] != 'article' || $id != $this->item->id))
+		if ($menu && ($menu->query['option'] !== 'com_blog' || $menu->query['view'] !== 'article' || $id != $this->item->id))
 		{
-			// If this is not a single article menu item, set the page title to the article title
-			if ($this->item->title)
-			{
-				$title = $this->item->title;
-			}
+			// If a browser page title is defined, use that, then fall back to the article title if set, then fall back to the page_title option
+			$title = $this->item->params->get('article_page_title', $this->item->title ?: $title);
 
 			$path     = array(array('title' => $this->item->title, 'link' => ''));
 			$category = JCategories::getInstance('Blog')->get($this->item->catid);
 
-			while ($category && ($menu->query['option'] != 'com_blog' || $menu->query['view'] == 'article' || $id != $category->id) && $category->id > 1)
+			while ($category && ($menu->query['option'] !== 'com_blog' || $menu->query['view'] === 'article' || $id != $category->id) && $category->id > 1)
 			{
 				$path[]   = array('title' => $category->title, 'link' => BlogHelperRoute::getCategoryRoute($category->id));
 				$category = $category->getParent();
@@ -285,7 +321,7 @@ class BlogViewArticle extends JViewLegacy
 
 		if ($app->get('MetaAuthor') == '1')
 		{
-			$author = $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author;
+			$author = $this->item->created_by_alias ?: $this->item->author;
 			$this->document->setMetaData('author', $author);
 		}
 
@@ -307,6 +343,8 @@ class BlogViewArticle extends JViewLegacy
 				$this->item->page_title . ' - ' . JText::sprintf('PLG_CONTENT_PAGEBREAK_PAGE_NUM', $this->state->get('list.offset') + 1)
 			);
 		}
+
+		$this->document->addStyleSheet(JUri::root() . 'media/com_blog/css/article-styles.css');
 
 		if ($this->print)
 		{

@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -12,28 +12,40 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
-$params		= $this->item->params;
-$images		= json_decode($this->item->images);
-$urls			= json_decode($this->item->urls);
-$canEdit	= $params->get('access-edit');
-$doc			= JFactory::getDocument();
-$user			= JFactory::getUser();
-$info			= $params->get('info_block_position', 0);
+$doc        = JFactory::getDocument();
+$params     = $this->item->params;
+$tpl        = JFactory::getApplication()->getTemplate($tpl_params = true);
+$tpl_params = $tpl->params;
+$images     = json_decode($this->item->images);
+$urls       = json_decode($this->item->urls);
+$canEdit    = $params->get('access-edit');
+$user       = JFactory::getUser();
+$info       = $params->get('info_block_position', 0);
+
+// Check if associations are implemented. If they are, define the parameter.
+$assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associations'));
 JHtml::_('behavior.caption');
 
-if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exists(JPATH_BASE . '/' . $images->image_fulltext))
-{
-	$img_path	= pathinfo($images->image_fulltext, PATHINFO_DIRNAME);
-	$img_base	= pathinfo($images->image_fulltext, PATHINFO_BASENAME);
-	$lrg_path	= JUri::base() . $img_path . '/' . $img_base;
-	list($img_width, $img_height)	= @getimagesize($lrg_path);
-	$doc->addCustomTag('<meta property="og:image" content="' . $lrg_path . '" />');
-	$doc->addCustomTag('<meta property="og:image:width" content="'.$img_width.'" />');
-	$doc->addCustomTag('<meta property="og:image:height" content="'.$img_height.'" />');
-}
 ?>
-<div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="http://schema.org/Article">
+<div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Article">
 	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? JFactory::getConfig()->get('language') : $this->item->language; ?>" />
+	<link itemprop="mainEntityOfPage" href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
+	<meta itemprop="author" content="<?php echo $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author; ?>">
+	<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+		<meta itemprop="name" content="<?php echo $this->escape($tpl_params->get('publisher_name', $this->item->author)); ?>">
+		<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+			<meta itemprop="url" content="<?php echo $tpl_params->get('logo', 'https://via.placeholder.com/150x150/ccc/ccc.png?text=logo'); ?>">
+		</span>
+	</span>
+
+	<?php if(!$params->get('show_modify_date')) : ?>
+		<time datetime="<?php echo JHtml::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+	<?php endif; ?>
+
+	<?php if(!$params->get('show_publish_date')) : ?>
+		<time datetime="<?php echo JHtml::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+	<?php endif; ?>
+
 	<?php if ($this->params->get('show_page_heading')) : ?>
 	<div class="page-header">
 		<h1> <?php echo $this->escape($this->params->get('page_heading')); ?> </h1>
@@ -47,7 +59,7 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 
 	<?php // Todo Not that elegant would be nice to group the params ?>
 	<?php $useDefList = ($params->get('show_modify_date') || $params->get('show_publish_date') || $params->get('show_create_date')
-	|| $params->get('show_hits') || $params->get('show_category') || $params->get('show_parent_category') || $params->get('show_author') ); ?>
+	|| $params->get('show_hits') || $params->get('show_category') || $params->get('show_parent_category') || $params->get('show_author') || $assocParam); ?>
 
 	<?php if (!$useDefList && $this->print) : ?>
 		<div id="pop-print" class="btn hidden-print">
@@ -57,11 +69,12 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 	<?php endif; ?>
 	<?php if ($params->get('show_title') || $params->get('show_author')) : ?>
 	<div class="page-header">
-		<h2 itemprop="name">
-			<?php if ($params->get('show_title')) : ?>
-				<?php echo $this->escape($this->item->title); ?>
-			<?php endif; ?>
-		</h2>
+		<?php if ($params->get('show_title')) : ?>
+			<h2 itemprop="headline"><?php echo $this->escape($this->item->title); ?></h2>
+		<?php else : ?>
+			<meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
+		<?php endif; ?>
+
 		<?php if ($this->item->state == 0) : ?>
 			<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
 		<?php endif; ?>
@@ -85,7 +98,11 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 		<?php endif; ?>
 	<?php endif; ?>
 
+	<?php // Blog is generated by content plugin event "onContentAfterTitle" ?>
+	<?php echo $this->item->event->afterDisplayTitle; ?>
+
 	<?php if ($useDefList && ($info == 0 || $info == 2)) : ?>
+		<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
 		<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'above')); ?>
 	<?php endif; ?>
 
@@ -95,24 +112,17 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 		<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
 	<?php endif; ?>
 
-	<?php if (!$params->get('show_intro')) : echo $this->item->event->afterDisplayTitle; endif; ?>
+	<?php // Blog is generated by content plugin event "onContentBeforeDisplay" ?>
 	<?php echo $this->item->event->beforeDisplayContent; ?>
 
 	<?php if (isset($urls) && ((!empty($urls->urls_position) && ($urls->urls_position == '0')) || ($params->get('urls_position') == '0' && empty($urls->urls_position)))
 		|| (empty($urls->urls_position) && (!$params->get('urls_position')))) : ?>
 	<?php echo $this->loadTemplate('links'); ?>
 	<?php endif; ?>
-	<?php if ($params->get('access-view')):?>
-	<?php if (isset($images->image_fulltext) && !empty($images->image_fulltext)) : ?>
-	<?php $imgfloat = (empty($images->float_fulltext)) ? $params->get('float_fulltext') : $images->float_fulltext; ?>
-	<div class="pull-<?php echo htmlspecialchars($imgfloat); ?> item-image"> <img
-	<?php if ($images->image_fulltext_caption):
-		echo 'class="caption"' . ' title="' . htmlspecialchars($images->image_fulltext_caption) . '"';
-	endif; ?>
-	src="<?php echo htmlspecialchars($images->image_fulltext); ?>" alt="<?php echo htmlspecialchars($images->image_fulltext_alt); ?>" itemprop="image"/> </div>
-	<?php endif; ?>
+	<?php if ($params->get('access-view')) : ?>
+	<?php echo JLayoutHelper::render('joomla.content.full_image', $this->item); ?>
 	<?php
-	if (!empty($this->item->pagination) && $this->item->pagination && !$this->item->paginationposition && !$this->item->paginationrelative):
+	if (!empty($this->item->pagination) && $this->item->pagination && !$this->item->paginationposition && !$this->item->paginationrelative) :
 		echo $this->item->pagination;
 	endif;
 	?>
@@ -120,11 +130,33 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 		echo $this->item->toc;
 	endif; ?>
 	<div itemprop="articleBody">
+		<?php if(!empty($this->item->video->uri)) : ?>
+			<div class="videowrapper">
+				<iframe src="<?php echo $this->item->video->uri; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+			</div>
+		<?php endif; ?>
+
 		<?php echo $this->item->text; ?>
+
+		<?php if ($params->get('show_image_gallery_frontend') && !empty($this->item->gallery)) : ?>
+			<div class="row small-up-2 medium-up-3 large-up-4" data-equalizer>
+				<?php foreach($this->item->gallery as $img) : ?>
+					<div class="column" data-equalizer-watch>
+						<a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
+							rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
+							<img src="<?php echo JUri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
+						</a>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
 	</div>
 
-	<?php if ($useDefList && ($info == 1 || $info == 2)) : ?>
-		<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
+	<?php if ($info == 1 || $info == 2) : ?>
+		<?php if ($useDefList) : ?>
+				<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
+			<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
+		<?php endif; ?>
 		<?php if ($params->get('show_tags', 1) && !empty($this->item->tags->itemTags)) : ?>
 			<?php $this->item->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
 			<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
@@ -132,7 +164,7 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 	<?php endif; ?>
 
 	<?php
-	if (!empty($this->item->pagination) && $this->item->pagination && $this->item->paginationposition && !$this->item->paginationrelative):
+	if (!empty($this->item->pagination) && $this->item->pagination && $this->item->paginationposition && !$this->item->paginationrelative) :
 		echo $this->item->pagination;
 	?>
 	<?php endif; ?>
@@ -141,30 +173,31 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 	<?php endif; ?>
 	<?php // Optional teaser intro text for guests ?>
 	<?php elseif ($params->get('show_noauth') == true && $user->get('guest')) : ?>
-	<?php echo $this->item->introtext; ?>
+	<?php echo JLayoutHelper::render('joomla.content.intro_image', $this->item); ?>
+	<?php echo JHtml::_('content.prepare', $this->item->introtext); ?>
 	<?php // Optional link to let them register to see the whole article. ?>
 	<?php if ($params->get('show_readmore') && $this->item->fulltext != null) : ?>
 	<?php $menu = JFactory::getApplication()->getMenu(); ?>
 	<?php $active = $menu->getActive(); ?>
 	<?php $itemId = $active->id; ?>
 	<?php $link = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . $itemId, false)); ?>
-	<?php $link->setVar('return', base64_encode(JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language), false))); ?>
+	<?php $link->setVar('return', base64_encode(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language))); ?>
 	<p class="readmore">
 		<a href="<?php echo $link; ?>" class="register">
 		<?php $attribs = json_decode($this->item->attribs); ?>
 		<?php
 		if ($attribs->alternative_readmore == null) :
 			echo JText::_('COM_BLOG_REGISTER_TO_READ_MORE');
-		elseif ($readmore = $this->item->alternative_readmore) :
+		elseif ($readmore = $attribs->alternative_readmore) :
 			echo $readmore;
 			if ($params->get('show_readmore_title', 0) != 0) :
-				echo JHtml::_('string.truncate', ($this->item->title), $params->get('readmore_limit'));
+				echo JHtml::_('string.truncate', $this->item->title, $params->get('readmore_limit'));
 			endif;
 		elseif ($params->get('show_readmore_title', 0) == 0) :
 			echo JText::sprintf('COM_BLOG_READ_MORE_TITLE');
 		else :
 			echo JText::_('COM_BLOG_READ_MORE');
-			echo JHtml::_('string.truncate', ($this->item->title), $params->get('readmore_limit'));
+			echo JHtml::_('string.truncate', $this->item->title, $params->get('readmore_limit'));
 		endif; ?>
 		</a>
 	</p>
@@ -175,5 +208,6 @@ if(isset($images->image_fulltext) && !empty($images->image_fulltext) && file_exi
 		echo $this->item->pagination;
 	?>
 	<?php endif; ?>
+	<?php // Blog is generated by content plugin event "onContentAfterDisplay" ?>
 	<?php echo $this->item->event->afterDisplayContent; ?>
 </div>
