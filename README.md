@@ -7,6 +7,7 @@ A fork of [Joomla! 3](https://github.com/joomla/joomla-cms/)'s *com_content* com
 
 ## Core content version equivalents
 Below is a quick table showing how this fork's versions line up with those of the core content component, starting with v3.0.9.
+
 | com_blog    | Joomla/com_content  |
 | ----------- | ------------------  |
 | 3.0.9       | 3.9.4~6             |
