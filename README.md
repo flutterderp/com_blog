@@ -5,5 +5,11 @@ A fork of [Joomla! 3](https://github.com/joomla/joomla-cms/)'s *com_content* com
 * Multiple categories – allows users to associate articles with more than one category (main category field is still used for SEF URL purposes)
 * Embedded video field that supports embedding a YouTube or Vimeo video within an article
 
+## Core content version equivalents
+Below is a quick table showing how this fork's versions line up with those of the core content component, starting with v3.0.9.
+| com_blog    | Joomla/com_content  |
+| ----------- | ------------------  |
+| 3.0.9       | 3.9.4~6             |
+
 ## Miscellaneous
 With the release of custom fields in Joomla! 3.7, this component/fork isn't really all that necessary since you can add the video field as a custom field and manipulate its output in a template override (and the multi-category relation can be done with tags, as well). It is neat, though, to see that not only can the core content component be pulled out into its own installable package but both it and the renamed fork can use the same template layouts with some clever overrides. :)
