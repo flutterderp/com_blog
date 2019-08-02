@@ -10,6 +10,7 @@ Below is a quick table showing how this fork's versions line up with those of th
 
 | com_blog    | Joomla/com_content  |
 | ----------- | ------------------  |
+| 3.0.10      | 3.9.7~10            |
 | 3.0.9       | 3.9.4~6             |
 
 ## Miscellaneous
