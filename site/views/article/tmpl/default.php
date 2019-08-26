@@ -67,13 +67,11 @@ JHtml::_('behavior.caption');
 		</div>
 		<div class="clearfix"> </div>
 	<?php endif; ?>
-	<?php if ($params->get('show_title') || $params->get('show_author')) : ?>
+	<?php if ($params->get('show_title')) : ?>
 	<div class="page-header">
-		<?php if ($params->get('show_title')) : ?>
-			<h2 itemprop="headline"><?php echo $this->escape($this->item->title); ?></h2>
-		<?php else : ?>
-			<meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
-		<?php endif; ?>
+		<h2 itemprop="headline">
+			<?php echo $this->escape($this->item->title); ?>
+		</h2>
 
 		<?php if ($this->item->state == 0) : ?>
 			<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
@@ -85,6 +83,8 @@ JHtml::_('behavior.caption');
 			<span class="label label-warning"><?php echo JText::_('JEXPIRED'); ?></span>
 		<?php endif; ?>
 	</div>
+	<?php else : ?>
+		<meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
 	<?php endif; ?>
 	<?php if (!$this->print) : ?>
 		<?php if ($canEdit || $params->get('show_print_icon') || $params->get('show_email_icon')) : ?>
