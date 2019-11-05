@@ -7,9 +7,10 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.0.12</version>
+	<version>3.0.13</version>
 	<description>com_blog_xml_description</description>
 	<scriptfile>install.com_blog.php</scriptfile>
+
 	<install> <!-- Runs on install -->
 		<sql>
 			<file driver="mysql" charset="utf8">sql/install.mysql.sql</file>
@@ -25,6 +26,7 @@
 			<file driver="mysql" charset="utf8">sql/uninstall.mysql.sql</file>
 		</sql>
 	</uninstall>
+
 	<files folder="site">
 		<filename>blog.php</filename>
 		<filename>controller.php</filename>
@@ -36,13 +38,16 @@
 		<folder>models</folder>
 		<folder>views</folder>
 	</files>
+
 	<languages folder="site">
 		<language tag="en-GB">language/en-GB.com_blog.ini</language>
 	</languages>
+
 	<media destination="com_blog" folder="media">
 		<folder>css</folder>
 		<!-- <folder>js</folder> -->
 	</media>
+
 	<administration>
 		<files folder="admin">
 			<filename>config.defaults.min.json</filename>
@@ -60,10 +65,12 @@
 			<folder>tables</folder>
 			<folder>views</folder>
 		</files>
+
 		<languages folder="admin">
 			<language tag="en-GB">language/en-GB.com_blog.ini</language>
 			<language tag="en-GB">language/en-GB.com_blog.sys.ini</language>
 		</languages>
+
 		<menu img="class:content">com_blog</menu>
 		<submenu>
 			<!-- Note that all & must be escaped to &amp; for the file to be valid XML and be parsed by the installer -->
