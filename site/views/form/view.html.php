@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  com_blog
  *
- * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -52,7 +52,16 @@ class BlogViewForm extends JViewLegacy
 
 		if (empty($this->item->id))
 		{
-			$authorised = $user->authorise('core.create', 'com_blog') || count($user->getAuthorisedCategories('com_blog', 'core.create'));
+			$catid = $this->state->params->get('catid');
+
+			if ($this->state->params->get('enable_category') == 1 && $catid)
+			{
+				$authorised = $user->authorise('core.create', 'com_blog.category.' . $catid);
+			}
+			else
+			{
+				$authorised = $user->authorise('core.create', 'com_blog') || count($user->getAuthorisedCategories('com_blog', 'core.create'));
+			}
 		}
 		else
 		{
