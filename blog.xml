@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.0.16</version>
+	<version>3.0.16.1</version>
 	<description>com_blog_xml_description</description>
 	<scriptfile>install.com_blog.php</scriptfile>
 
@@ -79,4 +79,8 @@
 			<menu view="categories" link="option=com_categories&amp;extension=com_blog" img="class:content-cat">mod_menu_com_blog_category_manager</menu>
 		</submenu>
 	</administration>
+
+	<updateservers>
+		<server type="extension" priority="1" name="Blog Articles">https://git.asuran.technology/com-blog-updates/updates/extension.xml</server>
+	</updateservers>
 </extension>
