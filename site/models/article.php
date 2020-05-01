@@ -252,7 +252,7 @@ class BlogModelArticle extends JModelItem
 			$pk = (!empty($pk)) ? $pk : (int) $this->getState('article.id');
 
 			$table = JTable::getInstance('Blog', 'Joomla\\CMS\\Table\\');
-			$table->load($pk);
+
 			$table->hit($pk);
 		}
 
