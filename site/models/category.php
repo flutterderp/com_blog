@@ -486,7 +486,7 @@ class BlogModelCategory extends JModelList
 			$pk = (!empty($pk)) ? $pk : (int) $this->getState('category.id');
 
 			$table = JTable::getInstance('Category', 'JTable');
-			$table->load($pk);
+
 			$table->hit($pk);
 		}
 
