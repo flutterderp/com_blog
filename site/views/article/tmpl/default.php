@@ -16,7 +16,6 @@ $doc        = JFactory::getDocument();
 $params     = $this->item->params;
 $tpl        = JFactory::getApplication()->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
-$images     = json_decode($this->item->images);
 $urls       = json_decode($this->item->urls);
 $canEdit    = $params->get('access-edit');
 $user       = JFactory::getUser();
