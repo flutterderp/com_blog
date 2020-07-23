@@ -282,7 +282,14 @@ class BlogViewCategory extends JViewCategory
 			}
 		}
 
-		$this->document->addStyleSheet(JUri::root() . 'media/com_blog/css/article-styles.css');
+		/**
+		 * The signature of HTMLHelper's stylesheet will be changing in 4.0…
+		 *
+		 * @deprecated 4.0
+		 * @link https://api.joomla.org/cms-3/classes/Joomla.CMS.HTML.HTMLHelper.html#method_stylesheet
+		 */
+		Joomla\CMS\HTML\HTMLHelper::stylesheet('com_blog/article-styles.css', array('version' => null, 'relative' => null), true);
+		// Joomla\CMS\HTML\HTMLHelper::stylesheet('com_blog/article-styles.css', array('version' => null, 'relative' => null), array());
 
 		parent::addFeed();
 	}
