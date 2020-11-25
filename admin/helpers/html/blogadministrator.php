@@ -100,7 +100,7 @@ abstract class JHtmlBlogAdministrator
 	 *
 	 * @return  string       HTML code
 	 */
-	public static function featured($value = 0, $i, $canChange = true)
+	public static function featured($value = 0, $i = 0, $canChange = true)
 	{
 		JHtml::_('bootstrap.tooltip');
 

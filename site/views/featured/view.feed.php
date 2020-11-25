@@ -48,7 +48,7 @@ class BlogViewFeatured extends JViewLegacy
 			$row->slug = $row->alias ? ($row->id . ':' . $row->alias) : $row->id;
 
 			// URL link to article
-			$link = JRoute::_(BlogHelperRoute::getArticleRoute($row->slug, $row->catid, $row->language));
+			$link = BlogHelperRoute::getArticleRoute($row->slug, $row->catid, $row->language);
 
 			$description = '';
 			$obj = json_decode($row->images);
@@ -66,7 +66,7 @@ class BlogViewFeatured extends JViewLegacy
 			// Load individual item creator class
 			$item           = new JFeedItem;
 			$item->title    = $title;
-			$item->link     = $link;
+			$item->link     = \JRoute::_($link);
 			$item->date     = $row->publish_up;
 			$item->category = array();
 

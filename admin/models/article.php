@@ -533,6 +533,14 @@ class BlogModelArticle extends JModelAdmin
 			}
 		}
 
+		if (!JFactory::getUser()->authorise('core.admin', 'com_blog'))
+		{
+			if (isset($data['rules']))
+			{
+				unset($data['rules']);
+			}
+		}
+
 		return parent::validate($form, $data, $group);
 	}
 
