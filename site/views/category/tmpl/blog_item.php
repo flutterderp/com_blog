@@ -20,6 +20,10 @@ $info       = $params->get('info_block_position', 0);
 // Check if associations are implemented. If they are, define the parameter.
 $assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associations'));
 
+$currentDate   = JFactory::getDate()->format('Y-m-d H:i:s');
+$isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentDate)
+	|| ($this->item->publish_down < $currentDate && $this->item->publish_down !== JFactory::getDbo()->getNullDate());
+
 ?>
 <link itemprop="mainEntityOfPage" href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
 <meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
@@ -39,8 +43,7 @@ $assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associat
 	<time datetime="<?php echo JHtml::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
 <?php endif; ?>
 
-<?php if ($this->item->state == 0 || strtotime($this->item->publish_up) > strtotime(JFactory::getDate())
-	|| ((strtotime($this->item->publish_down) < strtotime(JFactory::getDate())) && $this->item->publish_down != JFactory::getDbo()->getNullDate())) : ?>
+<?php if ($isUnpublished) : ?>
 	<div class="system-unpublished">
 <?php endif; ?>
 
@@ -99,8 +102,7 @@ $assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associat
 
 <?php endif; ?>
 
-<?php if ($this->item->state == 0 || strtotime($this->item->publish_up) > strtotime(JFactory::getDate())
-	|| ((strtotime($this->item->publish_down) < strtotime(JFactory::getDate())) && $this->item->publish_down != JFactory::getDbo()->getNullDate())) : ?>
+<?php if ($isUnpublished) : ?>
 </div>
 <?php endif; ?>
 
