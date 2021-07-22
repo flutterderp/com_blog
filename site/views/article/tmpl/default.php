@@ -143,35 +143,41 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 
 		<?php echo $this->item->text; ?>
 
-		<?php if(!empty($this->item->sources)) : ?>
+		<?php if(!empty($this->item->sources) || $this->item->sources_blob) : ?>
 			<h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-down"></span></h2>
 
 			<div class="sources" id="articleSources">
-				<ol>
-					<?php foreach($this->item->sources as $source) : ?>
-						<?php
-						$source_text   = array();
+				<?php if(!empty($this->item->sources)) : ?>
+					<ol>
+						<?php foreach($this->item->sources as $source) : ?>
+							<?php
+							$source_text   = array();
 
-						if($source['source_title'])
-						{
-							$source_text[] = nl2br($this->escape($source['source_title']));
-						}
+							if($source['source_title'])
+							{
+								$source_text[] = nl2br($this->escape($source['source_title']));
+							}
 
-						if($source['source_publish_date'])
-						{
-							$source_text[] = $this->escape($source['source_publish_date']);
-						}
+							if($source['source_publish_date'])
+							{
+								$source_text[] = $this->escape($source['source_publish_date']);
+							}
 
-						if($source['source_url'])
-						{
-							$source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
-						}
+							if($source['source_url'])
+							{
+								$source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
+							}
 
-						$source_text = implode(' ', $source_text);
-						?>
-						<li><?php echo $source_text; ?></li>
-					<?php endforeach; ?>
-				</ol>
+							$source_text = implode(' ', $source_text);
+							?>
+							<li><?php echo $source_text; ?></li>
+						<?php endforeach; ?>
+					</ol>
+				<?php endif; ?>
+
+				<?php if($this->item->sources_blob) : ?>
+					<?php echo $this->item->sources_blob; ?>
+				<?php endif; ?>
 			</div>
 		<?php endif; ?>
 

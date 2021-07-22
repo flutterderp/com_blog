@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `#__blog` (
   `gallery` text NOT NULL COMMENT 'A Subform-driven pseudo image gallery.',
   `video_uri` varchar(255) NOT NULL DEFAULT '' COMMENT 'A YouTube/Vimeo URI.',
   `sources` text NOT NULL,
+  `sources_blob` text NOT NULL,
   `extra1` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
   `extra2` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
   `extra3` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
