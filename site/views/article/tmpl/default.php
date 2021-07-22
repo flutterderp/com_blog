@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
+
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
@@ -77,13 +79,13 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 		</h2>
 
 		<?php if ($this->item->state == 0) : ?>
-			<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
+			<span class="label label-warning"><?php echo Text::_('JUNPUBLISHED'); ?></span>
 		<?php endif; ?>
 		<?php if ($isNotPublishedYet) : ?>
-			<span class="label label-warning"><?php echo JText::_('JNOTPUBLISHEDYET'); ?></span>
+			<span class="label label-warning"><?php echo Text::_('JNOTPUBLISHEDYET'); ?></span>
 		<?php endif; ?>
 		<?php if ($isExpired) : ?>
-			<span class="label label-warning"><?php echo JText::_('JEXPIRED'); ?></span>
+			<span class="label label-warning"><?php echo Text::_('JEXPIRED'); ?></span>
 		<?php endif; ?>
 	</div>
 	<?php else : ?>
@@ -141,6 +143,38 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 
 		<?php echo $this->item->text; ?>
 
+		<?php if(!empty($this->item->sources)) : ?>
+			<h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-down"></span></h2>
+
+			<div class="sources" id="articleSources">
+				<ol>
+					<?php foreach($this->item->sources as $source) : ?>
+						<?php
+						$source_text   = array();
+
+						if($source['source_title'])
+						{
+							$source_text[] = nl2br($this->escape($source['source_title']));
+						}
+
+						if($source['source_publish_date'])
+						{
+							$source_text[] = $this->escape($source['source_publish_date']);
+						}
+
+						if($source['source_url'])
+						{
+							$source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
+						}
+
+						$source_text = implode(' ', $source_text);
+						?>
+						<li><?php echo $source_text; ?></li>
+					<?php endforeach; ?>
+				</ol>
+			</div>
+		<?php endif; ?>
+
 		<?php if ($params->get('show_image_gallery_frontend') && !empty($this->item->gallery)) : ?>
 			<div class="row small-up-2 medium-up-3 large-up-4" data-equalizer>
 				<?php foreach($this->item->gallery as $img) : ?>
@@ -190,16 +224,16 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 		<?php $attribs = json_decode($this->item->attribs); ?>
 		<?php
 		if ($attribs->alternative_readmore == null) :
-			echo JText::_('COM_BLOG_REGISTER_TO_READ_MORE');
+			echo Text::_('COM_BLOG_REGISTER_TO_READ_MORE');
 		elseif ($readmore = $attribs->alternative_readmore) :
 			echo $readmore;
 			if ($params->get('show_readmore_title', 0) != 0) :
 				echo JHtml::_('string.truncate', $this->item->title, $params->get('readmore_limit'));
 			endif;
 		elseif ($params->get('show_readmore_title', 0) == 0) :
-			echo JText::sprintf('COM_BLOG_READ_MORE_TITLE');
+			echo Text::sprintf('COM_BLOG_READ_MORE_TITLE');
 		else :
-			echo JText::_('COM_BLOG_READ_MORE');
+			echo Text::_('COM_BLOG_READ_MORE');
 			echo JHtml::_('string.truncate', $this->item->title, $params->get('readmore_limit'));
 		endif; ?>
 		</a>

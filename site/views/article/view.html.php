@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Registry\Registry;
 
 /**
@@ -199,6 +200,9 @@ class BlogViewArticle extends JViewLegacy
 		$registry      = new Registry($item->gallery);
 		$item->gallery = $registry->toArray();
 
+		$registry      = new Registry($item->sources);
+		$item->sources = $registry->toArray();
+
 		// Process the content plugins.
 		JPluginHelper::importPlugin('content');
 		$dispatcher->trigger('onContentPrepare', array ('com_blog.article', &$item, &$item->params, $offset));
@@ -352,8 +356,12 @@ class BlogViewArticle extends JViewLegacy
 		 * @deprecated 4.0
 		 * @link https://api.joomla.org/cms-3/classes/Joomla.CMS.HTML.HTMLHelper.html#method_stylesheet
 		 */
-		Joomla\CMS\HTML\HTMLHelper::stylesheet('com_blog/article-styles.css', array('version' => null, 'relative' => null), true);
-		// Joomla\CMS\HTML\HTMLHelper::stylesheet('com_blog/article-styles.css', array('version' => null, 'relative' => null), array());
+		$jhtml_options     = array('version' => null, 'relative' => true);
+		$jhtml_css_attribs = array();
+		$jhtml_js_attribs  = array('defer' => true);
+
+		HtmlHelper::stylesheet('com_blog/article-styles.css', $jhtml_options, $jhtml_css_attribs);
+		HtmlHelper::script('com_blog/article-js.js', $jhtml_options, $jhtml_js_attribs);
 
 		if ($this->print)
 		{

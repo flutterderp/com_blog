@@ -81,9 +81,13 @@
 			description="COM_BLOG_FIELD_VIDEO_URI_DESC" filter="url" />
 
 		<!-- sources could also be a subform, maybe… 🤔 -->
-		<field name="sources" type="editor" label="COM_BLOG_FIELD_SOURCES_LABEL"
+		<!-- <field name="sources" type="editor" label="COM_BLOG_FIELD_SOURCES_LABEL"
 			description="COM_BLOG_FIELD_SOURCES_DESC"
-			filter="JComponentHelper::filterText" buttons="false" />
+			filter="JComponentHelper::filterText" buttons="false" /> -->
+		<field name="sources" type="subform"
+			formsource="administrator/components/com_blog/models/forms/subform_sources.xml" min="0" multiple="true"
+			layout="joomla.form.field.subform.repeatable-table" groupByFieldset="false"
+			label="COM_BLOG_FIELD_SOURCES_LABEL" description="COM_BLOG_FIELD_SOURCES_DESC" />
 
 		<field name="extra1" type="text" label="COM_BLOG_FIELD_EXTRA1_LABEL"
 			description="COM_BLOG_FIELD_EXTRA1_DESC" filter="string" />
