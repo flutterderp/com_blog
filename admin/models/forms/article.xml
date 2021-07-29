@@ -67,32 +67,95 @@
 		/>
 
 		<!-- Custom fields -->
-		<field name="secondary_categories" type="category"
+		<field
+			name="secondary_categories"
+			type="category"
 			label="COM_BLOG_FIELD_SECONDARY_CATEGORIES_LABEL"
 			description="COM_BLOG_FIELD_SECONDARY_CATEGORIES_DESC"
-			extension="com_blog" multiple="true" />
+			extension="com_blog"
+			multiple="true"
+			/>
 
-		<field name="gallery" type="subform"
-			formsource="administrator/components/com_blog/models/forms/subform_gallery.xml" min="0" max="8" multiple="true"
-			layout="joomla.form.field.subform.repeatable-table" groupByFieldset="false"
-			label="COM_BLOG_FIELD_GALLERY_LABEL" description="COM_BLOG_FIELD_GALLERY_DESC" />
+		<field
+			name="gallery"
+			type="subform"
+			formsource="administrator/components/com_blog/models/forms/subform_gallery.xml"
+			min="0"
+			max="8"
+			multiple="true"
+			layout="joomla.form.field.subform.repeatable-table"
+			groupByFieldset="false"
+			label="COM_BLOG_FIELD_GALLERY_LABEL"
+			description="COM_BLOG_FIELD_GALLERY_DESC"
+		/>
 
-		<field name="video_uri" type="url" label="COM_BLOG_FIELD_VIDEO_URI_LABEL"
-			description="COM_BLOG_FIELD_VIDEO_URI_DESC" filter="url" />
+		<field
+			name="video_uri"
+			type="url"
+			label="COM_BLOG_FIELD_VIDEO_URI_LABEL"
+			description="COM_BLOG_FIELD_VIDEO_URI_DESC"
+			filter="url"
+		/>
 
 		<!-- sources could also be a subform, maybe… 🤔 -->
-		<field name="sources" type="editor" label="COM_BLOG_FIELD_SOURCES_LABEL"
+		<field
+			name="toggle_sources_type"
+			type="radio"
+			class="btn-group"
+			label="COM_BLOG_FIELD_TOGGLE_SOURCES_TYPE_LABEL"
+			description="COM_BLOG_FIELD_TOGGLE_SOURCES_TYPE_DESC"
+			default="1"
+			>
+			<option value="1">SOURCES_TOGGLE_LIST</option>
+			<option value="0">SOURCES_TOGGLE_EDITOR</option>
+		</field>
+
+		<field
+			name="sources"
+			type="subform"
+			showon="toggle_sources_type:1"
+			formsource="administrator/components/com_blog/models/forms/subform_sources.xml"
+			min="0"
+			multiple="true"
+			layout="joomla.form.field.subform.repeatable-table"
+			groupByFieldset="false"
+			label="COM_BLOG_FIELD_SOURCES_LABEL"
 			description="COM_BLOG_FIELD_SOURCES_DESC"
-			filter="JComponentHelper::filterText" buttons="false" />
+		/>
 
-		<field name="extra1" type="text" label="COM_BLOG_FIELD_EXTRA1_LABEL"
-			description="COM_BLOG_FIELD_EXTRA1_DESC" filter="string" />
+		<field
+			name="sources_blob"
+			type="editor"
+			showon="toggle_sources_type:0"
+			label="COM_BLOG_FIELD_SOURCES_BLOB_LABEL"
+			description="COM_BLOG_FIELD_SOURCES_BLOB_DESC"
+			filter="JComponentHelper::filterText"
+			buttons="false"
+		/>
 
-		<field name="extra2" type="text" label="COM_BLOG_FIELD_EXTRA2_LABEL"
-			description="COM_BLOG_FIELD_EXTRA2_DESC" filter="string" />
+		<field
+			name="extra1"
+			type="text"
+			label="COM_BLOG_FIELD_EXTRA1_LABEL"
+			description="COM_BLOG_FIELD_EXTRA1_DESC"
+			filter="string"
+		/>
 
-		<field name="extra3" type="text" label="COM_BLOG_FIELD_EXTRA3_LABEL"
-			description="COM_BLOG_FIELD_EXTRA3_DESC" filter="string" />
+		<field
+			name="extra2"
+			type="text"
+			label="COM_BLOG_FIELD_EXTRA2_LABEL"
+			description="COM_BLOG_FIELD_EXTRA2_DESC"
+			filter="string"
+		/>
+
+		<field
+			name="extra3"
+			type="text"
+			label="COM_BLOG_FIELD_EXTRA3_LABEL"
+			description="COM_BLOG_FIELD_EXTRA3_DESC"
+			filter="string"
+		/>
 		<!-- End custom fields -->
 
 		<field

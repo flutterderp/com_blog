@@ -41,7 +41,7 @@ class JFormFieldModal_Article extends JFormField
 		$allowSelect    = ((string) $this->element['select'] != 'false');
 		$allowPropagate = ((string) $this->element['propagate'] == 'true');
 
-		$languages = LanguageHelper::getBlogLanguages(array(0, 1));
+		$languages = LanguageHelper::getContentLanguages(array(0, 1));
 
 		// Load language
 		JFactory::getLanguage()->load('com_blog', JPATH_ADMINISTRATOR);

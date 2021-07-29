@@ -8,3 +8,10 @@ ul.tags.inline li a:focus, ul.tags.inline li a:hover { background: #9f9f9f; colo
 .videowrapper::before, .videowrapper:before { content: ''; float: left; margin-left: -1px; padding: 56.25% 0 0 0; width: 1px; }
 .videowrapper::after, .videowrapper:after { clear: both; content: ''; display: table; }
 .videowrapper > embed, .videowrapper > iframe, .videowrapper > object { border: 0; height: 100%; margin: 0; max-width: unset; position: absolute; width: 100%; }
+
+.sources { height: 0; opacity: 0; transition: .15s all; visibility: hidden; }
+.sources.visible { height: auto; opacity: 100; visibility: visible; }
+.source-toggle { cursor: pointer; }
+.sources * { font-size: 1rem; line-height: calc(22 / 16); }
+.sources ol, .sources ul { margin: 0 auto 1rem; padding: 0; width: 100%; }
+.sources li { margin: 0 0 .625rem; }

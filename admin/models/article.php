@@ -847,7 +847,7 @@ class BlogModelArticle extends JModelAdmin
 		// Association content items
 		if (JLanguageAssociations::isEnabled())
 		{
-			$languages = JLanguageHelper::getBlogLanguages(false, true, null, 'ordering', 'asc');
+			$languages = JLanguageHelper::getContentLanguages(false, true, null, 'ordering', 'asc');
 
 			if (count($languages) > 1)
 			{

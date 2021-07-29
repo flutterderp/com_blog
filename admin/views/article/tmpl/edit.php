@@ -72,10 +72,13 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 
 					<div class="form-inline form-inline-header"><?php echo $this->form->renderField('video_uri'); ?></div>
 
-					<div class="control-group">
-						<?php echo $this->form->getLabel('gallery'); ?>
-						<?php echo $this->form->getInput('gallery'); ?>
-					</div>
+					<?php echo $this->form->renderField('gallery'); ?>
+
+					<?php echo $this->form->renderField('toggle_sources_type'); ?>
+
+					<?php echo $this->form->renderField('sources'); ?>
+
+					<?php echo $this->form->renderField('sources_blob'); ?>
 				</fieldset>
 			</div>
 			<div class="span3">

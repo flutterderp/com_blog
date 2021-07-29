@@ -157,6 +157,12 @@ class Blog extends Table
 			$array['gallery'] = (string) $registry;
 		}
 
+		if (isset($array['sources']) && is_array($array['sources']))
+		{
+			$registry = new Registry($array['sources']);
+			$array['sources'] = (string) $registry;
+		}
+
 		if(isset($array['secondary_categories']) && is_array($array['secondary_categories']))
 		{
 			$array['secondary_categories'] = implode(',', $array['secondary_categories']);

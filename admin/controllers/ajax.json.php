@@ -64,7 +64,7 @@ class BlogControllerAjax extends JControllerLegacy
 				$associations[$lang]->title = $contentTable->title;
 			}
 
-			$countContentLanguages = count(LanguageHelper::getBlogLanguages(array(0, 1)));
+			$countContentLanguages = count(LanguageHelper::getContentLanguages(array(0, 1)));
 
 			if (count($associations) == 0)
 			{
