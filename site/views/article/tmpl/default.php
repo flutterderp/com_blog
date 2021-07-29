@@ -144,10 +144,10 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 		<?php echo $this->item->text; ?>
 
 		<?php if(!empty($this->item->sources) || $this->item->sources_blob) : ?>
-			<h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-down"></span></h2>
+			<h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-right"></span></h2>
 
 			<div class="sources" id="articleSources">
-				<?php if(!empty($this->item->sources)) : ?>
+				<?php if((int) $this->item->toggle_sources_type === 1) : ?>
 					<ol>
 						<?php foreach($this->item->sources as $source) : ?>
 							<?php
@@ -173,9 +173,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 							<li><?php echo $source_text; ?></li>
 						<?php endforeach; ?>
 					</ol>
-				<?php endif; ?>
-
-				<?php if($this->item->sources_blob) : ?>
+				<?php else : ?>
 					<?php echo $this->item->sources_blob; ?>
 				<?php endif; ?>
 			</div>

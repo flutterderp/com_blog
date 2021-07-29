@@ -12,15 +12,15 @@ window.addEventListener('DOMContentLoaded', function() {
       if(sourceText.classList.contains('visible')) {
         sourceText.classList.remove('visible')
 
-        stArrow.classList.remove('fa-angle-right')
-        stArrow.classList.add('fa-angle-down')
+        stArrow.classList.remove('fa-angle-down')
+        stArrow.classList.add('fa-angle-right')
 
       } else {
         sourceText.classList.add('visible')
 
-        stArrow.classList.remove('fa-angle-down')
+        stArrow.classList.remove('fa-angle-right')
 
-        stArrow.classList.add('fa-angle-right')
+        stArrow.classList.add('fa-angle-down')
       }
     })
   }
