@@ -1,3 +1,4 @@
+_layout-files/*
 create-package.sh
 exclude.lst
 *._*
