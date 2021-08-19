@@ -5,6 +5,9 @@ A fork of [Joomla! 3](https://github.com/joomla/joomla-cms/)'s *com_content* com
 * Multiple categories – allows users to associate articles with more than one category (main category field is still used for SEF URL purposes)
 * Embedded video field that supports embedding a YouTube or Vimeo video within an article
 
+## Layout overrides
+The files in the `/_layout-files` directory are template overrides that allow the core content layouts to be used with both com_content and com_blog. Upload them to the `/html/layouts/joomla/content/` directory of your active template to use them.
+
 ## Core content version equivalents
 Below is a quick table showing how this fork's versions line up with those of the core content component, starting with v3.0.9.
 
