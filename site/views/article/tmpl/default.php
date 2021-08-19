@@ -9,32 +9,39 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Associations;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
-$doc        = JFactory::getDocument();
+$doc        = Factory::getDocument();
 $params     = $this->item->params;
-$tpl        = JFactory::getApplication()->getTemplate($tpl_params = true);
+$tpl        = Factory::getApplication()->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
 $urls       = json_decode($this->item->urls);
 $canEdit    = $params->get('access-edit');
-$user       = JFactory::getUser();
+$user       = Factory::getUser();
 $info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
-$assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associations'));
-JHtml::_('behavior.caption');
+$assocParam = (Associations::isEnabled() && $params->get('show_associations'));
+HTMLHelper::_('behavior.caption');
 
-$currentDate       = JFactory::getDate()->format('Y-m-d H:i:s');
+$currentDate       = Factory::getDate()->format('Y-m-d H:i:s');
 $isNotPublishedYet = $this->item->publish_up > $currentDate;
-$isExpired         = $this->item->publish_down < $currentDate && $this->item->publish_down !== JFactory::getDbo()->getNullDate();
+$isExpired         = $this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate();
 
 ?>
 <div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Article">
-	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? JFactory::getConfig()->get('language') : $this->item->language; ?>" />
-	<link itemprop="mainEntityOfPage" href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
+	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? Factory::getConfig()->get('language') : $this->item->language; ?>" />
+	<link itemprop="mainEntityOfPage" href="<?php echo Route::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
 	<meta itemprop="author" content="<?php echo $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author; ?>">
 	<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
 		<meta itemprop="name" content="<?php echo $this->escape($tpl_params->get('publisher_name', $this->item->author)); ?>">
@@ -44,11 +51,11 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	</span>
 
 	<?php if(!$params->get('show_modify_date')) : ?>
-		<time datetime="<?php echo JHtml::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+		<time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
 	<?php endif; ?>
 
 	<?php if(!$params->get('show_publish_date')) : ?>
-		<time datetime="<?php echo JHtml::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+		<time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
 	<?php endif; ?>
 
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -68,7 +75,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 
 	<?php if (!$useDefList && $this->print) : ?>
 		<div id="pop-print" class="btn hidden-print">
-			<?php echo JHtml::_('icon.print_screen', $this->item, $params); ?>
+			<?php echo HTMLHelper::_('icon.print_screen', $this->item, $params); ?>
 		</div>
 		<div class="clearfix"> </div>
 	<?php endif; ?>
@@ -93,12 +100,12 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php endif; ?>
 	<?php if (!$this->print) : ?>
 		<?php if ($canEdit || $params->get('show_print_icon') || $params->get('show_email_icon')) : ?>
-			<?php echo JLayoutHelper::render('joomla.content.icons', array('params' => $params, 'item' => $this->item, 'print' => false)); ?>
+			<?php echo LayoutHelper::render('joomla.content.icons', array('params' => $params, 'item' => $this->item, 'print' => false)); ?>
 		<?php endif; ?>
 	<?php else : ?>
 		<?php if ($useDefList) : ?>
 			<div id="pop-print" class="btn hidden-print">
-				<?php echo JHtml::_('icon.print_screen', $this->item, $params); ?>
+				<?php echo HTMLHelper::_('icon.print_screen', $this->item, $params); ?>
 			</div>
 		<?php endif; ?>
 	<?php endif; ?>
@@ -108,11 +115,11 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 
 	<?php if ($useDefList && ($info == 0 || $info == 2)) : ?>
 		<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
-		<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'above')); ?>
+		<?php echo LayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'above')); ?>
 	<?php endif; ?>
 
 	<?php if ($info == 0 && $params->get('show_tags', 1) && !empty($this->item->tags->itemTags)) : ?>
-		<?php $this->item->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
+		<?php $this->item->tagLayout = new FileLayout('joomla.content.tags'); ?>
 
 		<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
 	<?php endif; ?>
@@ -125,7 +132,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php echo $this->loadTemplate('links'); ?>
 	<?php endif; ?>
 	<?php if ($params->get('access-view')) : ?>
-	<?php echo JLayoutHelper::render('joomla.content.full_image', $this->item); ?>
+	<?php echo LayoutHelper::render('joomla.content.full_image', $this->item); ?>
 	<?php
 	if (!empty($this->item->pagination) && $this->item->pagination && !$this->item->paginationposition && !$this->item->paginationrelative) :
 		echo $this->item->pagination;
@@ -185,7 +192,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 					<div class="column" data-equalizer-watch>
 						<a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
 							rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
-							<img src="<?php echo JUri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
+							<img src="<?php echo Uri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
 						</a>
 					</div>
 				<?php endforeach; ?>
@@ -196,10 +203,10 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php if ($info == 1 || $info == 2) : ?>
 		<?php if ($useDefList) : ?>
 				<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
-			<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
+			<?php echo LayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
 		<?php endif; ?>
 		<?php if ($params->get('show_tags', 1) && !empty($this->item->tags->itemTags)) : ?>
-			<?php $this->item->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
+			<?php $this->item->tagLayout = new FileLayout('joomla.content.tags'); ?>
 			<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
 		<?php endif; ?>
 	<?php endif; ?>
@@ -214,34 +221,16 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php endif; ?>
 	<?php // Optional teaser intro text for guests ?>
 	<?php elseif ($params->get('show_noauth') == true && $user->get('guest')) : ?>
-	<?php echo JLayoutHelper::render('joomla.content.intro_image', $this->item); ?>
-	<?php echo JHtml::_('content.prepare', $this->item->introtext); ?>
+	<?php echo LayoutHelper::render('joomla.content.intro_image', $this->item); ?>
+	<?php echo HTMLHelper::_('content.prepare', $this->item->introtext); ?>
 	<?php // Optional link to let them register to see the whole article. ?>
 	<?php if ($params->get('show_readmore') && $this->item->fulltext != null) : ?>
-	<?php $menu = JFactory::getApplication()->getMenu(); ?>
+	<?php $menu = Factory::getApplication()->getMenu(); ?>
 	<?php $active = $menu->getActive(); ?>
 	<?php $itemId = $active->id; ?>
-	<?php $link = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . $itemId, false)); ?>
+	<?php $link = new Uri(Route::_('index.php?option=com_users&view=login&Itemid=' . $itemId, false)); ?>
 	<?php $link->setVar('return', base64_encode(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language))); ?>
-	<p class="readmore">
-		<a href="<?php echo $link; ?>" class="register">
-		<?php $attribs = json_decode($this->item->attribs); ?>
-		<?php
-		if ($attribs->alternative_readmore == null) :
-			echo Text::_('COM_BLOG_REGISTER_TO_READ_MORE');
-		elseif ($readmore = $attribs->alternative_readmore) :
-			echo $readmore;
-			if ($params->get('show_readmore_title', 0) != 0) :
-				echo JHtml::_('string.truncate', $this->item->title, $params->get('readmore_limit'));
-			endif;
-		elseif ($params->get('show_readmore_title', 0) == 0) :
-			echo Text::sprintf('COM_BLOG_READ_MORE_TITLE');
-		else :
-			echo Text::_('COM_BLOG_READ_MORE');
-			echo JHtml::_('string.truncate', $this->item->title, $params->get('readmore_limit'));
-		endif; ?>
-		</a>
-	</p>
+	<?php echo LayoutHelper::render('joomla.content.readmore', array('item' => $this->item, 'params' => $params, 'link' => $link)); ?>
 	<?php endif; ?>
 	<?php endif; ?>
 	<?php
