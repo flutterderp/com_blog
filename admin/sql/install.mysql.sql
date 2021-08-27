@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS `#__blog` (
   `toggle_sources_type` tinyint(1) unsigned NOT NULL DEFAULT 1,
   `sources` text NOT NULL,
   `sources_blob` text NOT NULL,
-  `extra1` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
-  `extra2` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
-  `extra3` varchar(255) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
+  `extra1` varchar(200) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
+  `extra2` varchar(200) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
+  `extra3` varchar(200) NOT NULL DEFAULT '' COMMENT 'Placeholder for additional custom field.',
   `state` tinyint(3) NOT NULL DEFAULT 0,
   `catid` int(10) unsigned NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `#__blog` (
   `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `images` text NOT NULL,
   `urls` text NOT NULL,
-  `attribs` varchar(5120) NOT NULL,
+  `attribs` text NOT NULL,
   `version` int(10) unsigned NOT NULL DEFAULT 1,
   `ordering` int(11) NOT NULL DEFAULT 0,
   `metakey` text NOT NULL,
@@ -53,10 +53,9 @@ CREATE TABLE IF NOT EXISTS `#__blog` (
   KEY `idx_language` (`language`),
   KEY `idx_xreference` (`xreference`),
   KEY `idx_alias` (`alias`(191)),
-  KEY `idx_introtext` (`introtext`(250)),
-  KEY `idx_fulltext` (`fulltext`(250)),
-  KEY `idx_secondary_categories` (`secondary_categories`(128)),
-  KEY `idx_sources` (`sources`(250))
+  KEY `idx_introtext` (`introtext`(191)), -- 768 / 4 (https://dev.mysql.com/doc/refman/8.0/en/innodb-limits.html)
+  KEY `idx_fulltext` (`fulltext`(191)), -- 768 / 4
+  KEY `idx_secondary_categories` (`secondary_categories`(128))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
