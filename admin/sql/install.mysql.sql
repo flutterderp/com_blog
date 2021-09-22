@@ -53,8 +53,8 @@ CREATE TABLE IF NOT EXISTS `#__blog` (
   KEY `idx_language` (`language`),
   KEY `idx_xreference` (`xreference`),
   KEY `idx_alias` (`alias`(191)),
-  KEY `idx_introtext` (`introtext`(191)), -- 768 / 4 (https://dev.mysql.com/doc/refman/8.0/en/innodb-limits.html)
-  KEY `idx_fulltext` (`fulltext`(191)), -- 768 / 4
+  -- KEY `idx_introtext` (`introtext`(191)), -- 768 / 4 (https://dev.mysql.com/doc/refman/8.0/en/innodb-limits.html)
+  -- KEY `idx_fulltext` (`fulltext`(191)), -- 768 / 4
   KEY `idx_secondary_categories` (`secondary_categories`(128))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
