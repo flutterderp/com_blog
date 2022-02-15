@@ -218,7 +218,7 @@ class BlogViewArticle extends JViewLegacy
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx'));
+		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx', ''));
 
 		$this->_prepareDocument();
 
