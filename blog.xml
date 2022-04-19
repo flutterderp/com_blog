@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.0.27</version>
+	<version>3.0.28</version>
 	<description>com_blog_xml_description</description>
 	<scriptfile>install.com_blog.php</scriptfile>
 
