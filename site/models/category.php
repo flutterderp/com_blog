@@ -9,6 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\Categories;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Table\Table;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
@@ -109,7 +113,7 @@ class BlogModelCategory extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		$app = JFactory::getApplication('site');
+		$app = Factory::getApplication('site');
 		$pk  = $app->input->getInt('id');
 
 		$this->setState('category.id', $pk);
@@ -120,14 +124,14 @@ class BlogModelCategory extends JModelList
 
 		if ($menu = $app->getMenu()->getActive())
 		{
-			$menuParams->loadString($menu->params);
+			$menuParams->loadString($menu->getParams());
 		}
 
 		$mergedParams = clone $menuParams;
 		$mergedParams->merge($params);
 
 		$this->setState('params', $mergedParams);
-		$user  = JFactory::getUser();
+		$user  = Factory::getUser();
 
 		$asset = 'com_blog';
 
@@ -208,7 +212,7 @@ class BlogModelCategory extends JModelList
 			$this->setState('filter.subcategories', true);
 		}
 
-		$this->setState('filter.language', JLanguageMultilang::isEnabled());
+		$this->setState('filter.language', Multilanguage::isEnabled());
 
 		$this->setState('layout', $app->input->getString('layout'));
 
@@ -230,7 +234,7 @@ class BlogModelCategory extends JModelList
 		if ($this->_articles === null && $category = $this->getCategory())
 		{
 			$model = JModelLegacy::getInstance('Articles', 'BlogModel', array('ignore_request' => true));
-			$model->setState('params', JFactory::getApplication()->getParams());
+			$model->setState('params', Factory::getApplication()->getParams());
 			$model->setState('filter.category_id', $category->id);
 			$model->setState('filter.published', $this->getState('filter.published'));
 			$model->setState('filter.access', $this->getState('filter.access'));
@@ -277,7 +281,7 @@ class BlogModelCategory extends JModelList
 	 */
 	protected function _buildBlogOrderBy()
 	{
-		$app       = JFactory::getApplication('site');
+		$app       = Factory::getApplication('site');
 		$db        = $this->getDbo();
 		$params    = $this->state->params;
 		$itemid    = $app->input->get('id', 0, 'int') . ':' . $app->input->get('Itemid', 0, 'int');
@@ -351,13 +355,13 @@ class BlogModelCategory extends JModelList
 				$options['countItems'] = 0;
 			}
 
-			$categories = JCategories::getInstance('Blog', $options);
+			$categories = Categories::getInstance('Blog', $options);
 			$this->_item = $categories->get($this->getState('category.id', 'root'));
 
 			// Compute selected asset permissions.
 			if (is_object($this->_item))
 			{
-				$user  = JFactory::getUser();
+				$user  = Factory::getUser();
 				$asset = 'com_blog.category.' . $this->_item->id;
 
 				// Check general create permission.
@@ -478,14 +482,14 @@ class BlogModelCategory extends JModelList
 	 */
 	public function hit($pk = 0)
 	{
-		$input = JFactory::getApplication()->input;
+		$input = Factory::getApplication()->input;
 		$hitcount = $input->getInt('hitcount', 1);
 
 		if ($hitcount)
 		{
 			$pk = (!empty($pk)) ? $pk : (int) $this->getState('category.id');
 
-			$table = JTable::getInstance('Category', 'JTable');
+			$table = Table::getInstance('Category', 'JTable');
 
 			$table->hit($pk);
 		}

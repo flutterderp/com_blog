@@ -9,6 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Table\Table;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\IpHelper;
 
@@ -37,7 +41,7 @@ class BlogModelArticle extends JModelItem
 	 */
 	protected function populateState()
 	{
-		$app = JFactory::getApplication('site');
+		$app = Factory::getApplication('site');
 
 		// Load state from the request.
 		$pk = $app->input->getInt('id');
@@ -50,7 +54,7 @@ class BlogModelArticle extends JModelItem
 		$params = $app->getParams();
 		$this->setState('params', $params);
 
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// If $pk is set then authorise on complete asset, else on component only
 		$asset = empty($pk) ? 'com_blog' : 'com_blog.article.' . $pk;
@@ -61,7 +65,7 @@ class BlogModelArticle extends JModelItem
 			$this->setState('filter.archived', 2);
 		}
 
-		$this->setState('filter.language', JLanguageMultilang::isEnabled());
+		$this->setState('filter.language', Multilanguage::isEnabled());
 	}
 
 	/**
@@ -73,7 +77,7 @@ class BlogModelArticle extends JModelItem
 	 */
 	public function getItem($pk = null)
 	{
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		$pk = (!empty($pk)) ? $pk : (int) $this->getState('article.id');
 
@@ -115,7 +119,7 @@ class BlogModelArticle extends JModelItem
 				// Filter by language
 				if ($this->getState('filter.language'))
 				{
-					$query->where('a.language in (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
+					$query->where('a.language in (' . $db->quote(Factory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
 				}
 
 				// Join over the categories to get parent category titles
@@ -130,7 +134,7 @@ class BlogModelArticle extends JModelItem
 				{
 					// Filter by start and end dates.
 					$nullDate = $db->quote($db->getNullDate());
-					$date = JFactory::getDate();
+					$date = Factory::getDate();
 
 					$nowDate = $db->quote($date->toSql());
 
@@ -153,13 +157,13 @@ class BlogModelArticle extends JModelItem
 
 				if (empty($data))
 				{
-					return JError::raiseError(404, JText::_('COM_BLOG_ERROR_ARTICLE_NOT_FOUND'));
+					throw new Exception(Text::_('COM_BLOG_ERROR_ARTICLE_NOT_FOUND'), 404);
 				}
 
 				// Check for published state if filter set.
 				if ((is_numeric($published) || is_numeric($archived)) && (($data->state != $published) && ($data->state != $archived)))
 				{
-					return JError::raiseError(404, JText::_('COM_BLOG_ERROR_ARTICLE_NOT_FOUND'));
+					throw new Exception(Text::_('COM_BLOG_ERROR_ARTICLE_NOT_FOUND'), 404);
 				}
 
 				// Convert parameter fields to objects.
@@ -202,7 +206,7 @@ class BlogModelArticle extends JModelItem
 				else
 				{
 					// If no access filter is set, the layout takes some responsibility for display of limited information.
-					$user = JFactory::getUser();
+					$user = Factory::getUser();
 					$groups = $user->getAuthorisedViewLevels();
 
 					if ($data->catid == 0 || $data->category_access === null)
@@ -222,7 +226,7 @@ class BlogModelArticle extends JModelItem
 				if ($e->getCode() == 404)
 				{
 					// Need to go thru the error handler to allow Redirect to work.
-					JError::raiseError(404, $e->getMessage());
+					throw new Exception($e->getMessage(), 404);
 				}
 				else
 				{
@@ -244,14 +248,14 @@ class BlogModelArticle extends JModelItem
 	 */
 	public function hit($pk = 0)
 	{
-		$input = JFactory::getApplication()->input;
+		$input = Factory::getApplication()->input;
 		$hitcount = $input->getInt('hitcount', 1);
 
 		if ($hitcount)
 		{
 			$pk = (!empty($pk)) ? $pk : (int) $this->getState('article.id');
 
-			$table = JTable::getInstance('Blog', 'Joomla\\CMS\\Table\\');
+			$table = Table::getInstance('Blog', 'Joomla\\CMS\\Table\\');
 
 			$table->hit($pk);
 		}
@@ -292,7 +296,7 @@ class BlogModelArticle extends JModelItem
 			}
 			catch (RuntimeException $e)
 			{
-				JError::raiseWarning(500, $e->getMessage());
+				throw new Exception($e->getMessage(), 500);
 
 				return false;
 			}
@@ -316,7 +320,7 @@ class BlogModelArticle extends JModelItem
 				}
 				catch (RuntimeException $e)
 				{
-					JError::raiseWarning(500, $e->getMessage());
+					throw new Exception($e->getMessage(), 500);
 
 					return false;
 				}
@@ -343,7 +347,7 @@ class BlogModelArticle extends JModelItem
 					}
 					catch (RuntimeException $e)
 					{
-						JError::raiseWarning(500, $e->getMessage());
+						throw new Exception($e->getMessage(), 500);
 
 						return false;
 					}
@@ -359,7 +363,8 @@ class BlogModelArticle extends JModelItem
 			return true;
 		}
 
-		JError::raiseWarning(500, JText::sprintf('COM_BLOG_INVALID_RATING', $rate), "JModelArticle::storeVote($rate)");
+		Factory::getApplication()->enqueueMessage(Text::sprintf('COM_BLOG_INVALID_RATING', $rate), 'warning');
+		// JError::raiseWarning(500, JText::sprintf('COM_BLOG_INVALID_RATING', $rate), "JModelArticle::storeVote($rate)");
 
 		return false;
 	}

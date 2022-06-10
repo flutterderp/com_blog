@@ -10,6 +10,9 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 /**
  * Blog Component Controller
@@ -29,7 +32,7 @@ class BlogController extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
-		$this->input = JFactory::getApplication()->input;
+		$this->input = Factory::getApplication()->input;
 
 		// Article frontpage Editor pagebreak proxying:
 		if ($this->input->get('view') === 'article' && $this->input->get('layout') === 'pagebreak')
@@ -39,7 +42,7 @@ class BlogController extends JControllerLegacy
 		// Article frontpage Editor article proxying:
 		elseif ($this->input->get('view') === 'articles' && $this->input->get('layout') === 'modal')
 		{
-			JHtml::_('stylesheet', 'system/adminlist.css', array('version' => 'auto', 'relative' => true));
+			HTMLHelper::_('stylesheet', 'system/adminlist.css', array('version' => 'auto', 'relative' => true));
 			$config['base_path'] = JPATH_COMPONENT_ADMINISTRATOR;
 		}
 
@@ -69,7 +72,7 @@ class BlogController extends JControllerLegacy
 		$vName = $this->input->getCmd('view', 'categories');
 		$this->input->set('view', $vName);
 
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		if ($user->get('id')
 			|| ($this->input->getMethod() === 'POST'
@@ -100,7 +103,7 @@ class BlogController extends JControllerLegacy
 		if ($vName === 'form' && !$this->checkEditId('com_blog.edit.article', $id))
 		{
 			// Somehow the person just went to the form - we don't allow that.
-			return JError::raiseError(403, JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+			throw new Exception(Text::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id), 403);
 		}
 
 		if ($vName === 'article')

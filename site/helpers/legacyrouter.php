@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\Categories;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 /**
  * Legacy routing rules class from com_blog
  *
@@ -58,7 +63,7 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 	public function build(&$query, &$segments)
 	{
 		// Get a menu item based on Itemid or currently active
-		$params = JComponentHelper::getParams('com_blog');
+		$params = ComponentHelper::getParams('com_blog');
 		$advanced = $params->get('sef_advanced_link', 0);
 
 		// We need a menu item.  Either the one specified in the query, or the current active one if none specified
@@ -131,7 +136,7 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 					// Make sure we have the id and the alias
 					if (strpos($query['id'], ':') === false)
 					{
-						$db = JFactory::getDbo();
+						$db = Factory::getDbo();
 						$dbQuery = $db->getQuery(true)
 							->select('alias')
 							->from('#__blog')
@@ -169,7 +174,7 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 				$mCatid = 0;
 			}
 
-			$categories = JCategories::getInstance('Blog');
+			$categories = Categories::getInstance('Blog');
 			$category = $categories->get($catid);
 
 			if (!$category)
@@ -309,9 +314,9 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 
 		// Get the active menu item.
 		$item = $this->router->menu->getActive();
-		$params = JComponentHelper::getParams('com_blog');
+		$params = ComponentHelper::getParams('com_blog');
 		$advanced = $params->get('sef_advanced_link', 0);
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		// Count route segments
 		$count = count($segments);
@@ -347,7 +352,7 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 			list($id, $alias) = explode(':', $segments[0], 2);
 
 			// First we check if it is a category
-			$category = JCategories::getInstance('Blog')->get($id);
+			$category = Categories::getInstance('Blog')->get($id);
 
 			if ($category && $category->alias == $alias)
 			{
@@ -407,11 +412,11 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 
 		// We get the category id from the menu item and search from there
 		$id = $item->query['id'];
-		$category = JCategories::getInstance('Blog')->get($id);
+		$category = Categories::getInstance('Blog')->get($id);
 
 		if (!$category)
 		{
-			JError::raiseError(404, JText::_('COM_BLOG_ERROR_PARENT_CATEGORY_NOT_FOUND'));
+			throw new Exception(Text::_('COM_BLOG_ERROR_PARENT_CATEGORY_NOT_FOUND'), 404);
 
 			return;
 		}
@@ -442,7 +447,7 @@ class BlogRouterRulesLegacy implements JComponentRouterRulesInterface
 			{
 				if ($advanced)
 				{
-					$db = JFactory::getDbo();
+					$db = Factory::getDbo();
 					$query = $db->getQuery(true)
 						->select($db->quoteName('id'))
 						->from('#__blog')

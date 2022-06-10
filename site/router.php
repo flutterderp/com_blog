@@ -9,6 +9,14 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\Categories;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Component\Router\RouterViewConfiguration;
+use Joomla\CMS\Component\Router\Rules\MenuRules;
+use Joomla\CMS\Component\Router\Rules\NomenuRules;
+use Joomla\CMS\Component\Router\Rules\StandardRules;
+use Joomla\CMS\Factory;
+
 /**
  * Routing class of com_blog
  *
@@ -26,31 +34,31 @@ class BlogRouter extends JComponentRouterView
 	 */
 	public function __construct($app = null, $menu = null)
 	{
-		$params = JComponentHelper::getParams('com_blog');
+		$params = ComponentHelper::getParams('com_blog');
 		$this->noIDs = (bool) $params->get('sef_ids');
-		$categories = new JComponentRouterViewconfiguration('categories');
+		$categories = new RouterViewConfiguration('categories');
 		$categories->setKey('id');
 		$this->registerView($categories);
-		$category = new JComponentRouterViewconfiguration('category');
+		$category = new RouterViewConfiguration('category');
 		$category->setKey('id')->setParent($categories, 'catid')->setNestable()->addLayout('blog');
 		$this->registerView($category);
-		$article = new JComponentRouterViewconfiguration('article');
+		$article = new RouterViewConfiguration('article');
 		$article->setKey('id')->setParent($category, 'catid');
 		$this->registerView($article);
-		$this->registerView(new JComponentRouterViewconfiguration('archive'));
-		$this->registerView(new JComponentRouterViewconfiguration('featured'));
-		$form = new JComponentRouterViewconfiguration('form');
+		$this->registerView(new RouterViewConfiguration('archive'));
+		$this->registerView(new RouterViewConfiguration('featured'));
+		$form = new RouterViewConfiguration('form');
 		$form->setKey('a_id');
 		$this->registerView($form);
 
 		parent::__construct($app, $menu);
 
-		$this->attachRule(new JComponentRouterRulesMenu($this));
+		$this->attachRule(new MenuRules($this));
 
 		if ($params->get('sef_advanced', 0))
 		{
-			$this->attachRule(new JComponentRouterRulesStandard($this));
-			$this->attachRule(new JComponentRouterRulesNomenu($this));
+			$this->attachRule(new StandardRules($this));
+			$this->attachRule(new NomenuRules($this));
 		}
 		else
 		{
@@ -69,7 +77,7 @@ class BlogRouter extends JComponentRouterView
 	 */
 	public function getCategorySegment($id, $query)
 	{
-		$category = JCategories::getInstance($this->getName())->get($id);
+		$category = Categories::getInstance($this->getName())->get($id);
 
 		if ($category)
 		{
@@ -115,7 +123,7 @@ class BlogRouter extends JComponentRouterView
 	{
 		if (!strpos($id, ':'))
 		{
-			$db = JFactory::getDbo();
+			$db = Factory::getDbo();
 			$dbquery = $db->getQuery(true);
 			$dbquery->select($dbquery->qn('alias'))
 				->from($dbquery->qn('#__blog'))
@@ -162,7 +170,7 @@ class BlogRouter extends JComponentRouterView
 	{
 		if (isset($query['id']))
 		{
-			$category = JCategories::getInstance($this->getName(), array('access' => false))->get($query['id']);
+			$category = Categories::getInstance($this->getName(), array('access' => false))->get($query['id']);
 
 			if ($category)
 			{
@@ -214,7 +222,7 @@ class BlogRouter extends JComponentRouterView
 	{
 		if ($this->noIDs)
 		{
-			$db = JFactory::getDbo();
+			$db = Factory::getDbo();
 			$dbquery = $db->getQuery(true);
 			$dbquery->select($dbquery->qn('id'))
 				->from($dbquery->qn('#__blog'))
@@ -243,7 +251,7 @@ class BlogRouter extends JComponentRouterView
  */
 function blogBuildRoute(&$query)
 {
-	$app = JFactory::getApplication();
+	$app = Factory::getApplication();
 	$router = new BlogRouter($app, $app->getMenu());
 
 	return $router->build($query);
@@ -264,7 +272,7 @@ function blogBuildRoute(&$query)
  */
 function blogParseRoute($segments)
 {
-	$app = JFactory::getApplication();
+	$app = Factory::getApplication();
 	$router = new BlogRouter($app, $app->getMenu());
 
 	return $router->parse($segments);

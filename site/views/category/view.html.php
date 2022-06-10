@@ -10,7 +10,9 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\Registry\Registry;
 
 /**
@@ -190,11 +192,11 @@ class BlogViewCategory extends JViewCategory
 		}
 		elseif ($app->get('sitename_pagetitles', 0) == 1)
 		{
-			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+			$title = Text::sprintf('JPAGETITLE', $app->get('sitename'), $title);
 		}
 		elseif ($app->get('sitename_pagetitles', 0) == 2)
 		{
-			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+			$title = Text::sprintf('JPAGETITLE', $title, $app->get('sitename'));
 		}
 
 		if (empty($title))

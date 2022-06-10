@@ -9,11 +9,19 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Version;
+
+HTMLHelper::_('bootstrap.tooltip');
 
 $class  = ' class="first"';
-$lang   = JFactory::getLanguage();
-$user   = JFactory::getUser();
+$lang   = Factory::getLanguage();
+$user   = Factory::getUser();
 $groups = $user->getAuthorisedViewLevels();
 
 if ($this->maxLevel != 0 && count($this->children[$this->category->id]) > 0) : ?>
@@ -31,29 +39,29 @@ if ($this->maxLevel != 0 && count($this->children[$this->category->id]) > 0) : ?
 				<?php if ($lang->isRtl()) : ?>
 				<h3 class="page-header item-title">
 					<?php if ( $this->params->get('show_cat_num_articles', 1)) : ?>
-						<span class="badge badge-info tip hasTooltip" title="<?php echo JHtml::_('tooltipText', 'COM_BLOG_NUM_ITEMS_TIP'); ?>">
+						<span class="badge badge-info tip hasTooltip" title="<?php echo HTMLHelper::_('tooltipText', 'COM_BLOG_NUM_ITEMS_TIP'); ?>">
 							<?php echo $child->getNumItems(true); ?>
 						</span>
 					<?php endif; ?>
-					<a href="<?php echo JRoute::_(BlogHelperRoute::getCategoryRoute($child->id)); ?>">
+					<a href="<?php echo Route::_(BlogHelperRoute::getCategoryRoute($child->id)); ?>">
 					<?php echo $this->escape($child->title); ?></a>
 
 					<?php if ($this->maxLevel > 1 && count($child->getChildren()) > 0) : ?>
-						<a href="#category-<?php echo $child->id; ?>" data-toggle="collapse" class="btn btn-mini pull-right" aria-label="<?php echo JText::_('JGLOBAL_EXPAND_CATEGORIES'); ?>"><span class="icon-plus" aria-hidden="true"></span></a>
+						<a href="#category-<?php echo $child->id; ?>" data-toggle="collapse" class="btn btn-mini pull-right" aria-label="<?php echo Text::_('JGLOBAL_EXPAND_CATEGORIES'); ?>"><span class="icon-plus" aria-hidden="true"></span></a>
 					<?php endif; ?>
 				</h3>
 				<?php else : ?>
-				<h3 class="page-header item-title"><a href="<?php echo JRoute::_(BlogHelperRoute::getCategoryRoute($child->id)); ?>">
+				<h3 class="page-header item-title"><a href="<?php echo Route::_(BlogHelperRoute::getCategoryRoute($child->id)); ?>">
 					<?php echo $this->escape($child->title); ?></a>
 					<?php if ( $this->params->get('show_cat_num_articles', 1)) : ?>
-						<span class="badge badge-info tip hasTooltip" title="<?php echo JHtml::_('tooltipText', 'COM_BLOG_NUM_ITEMS_TIP'); ?>">
-							<?php echo JText::_('COM_BLOG_NUM_ITEMS'); ?>&nbsp;
+						<span class="badge badge-info tip hasTooltip" title="<?php echo HTMLHelper::_('tooltipText', 'COM_BLOG_NUM_ITEMS_TIP'); ?>">
+							<?php echo Text::_('COM_BLOG_NUM_ITEMS'); ?>&nbsp;
 							<?php echo $child->getNumItems(true); ?>
 						</span>
 					<?php endif; ?>
 
 					<?php if ($this->maxLevel > 1 && count($child->getChildren()) > 0) : ?>
-						<a href="#category-<?php echo $child->id; ?>" data-toggle="collapse" class="btn btn-mini pull-right" aria-label="<?php echo JText::_('JGLOBAL_EXPAND_CATEGORIES'); ?>"><span class="icon-plus" aria-hidden="true"></span></a>
+						<a href="#category-<?php echo $child->id; ?>" data-toggle="collapse" class="btn btn-mini pull-right" aria-label="<?php echo Text::_('JGLOBAL_EXPAND_CATEGORIES'); ?>"><span class="icon-plus" aria-hidden="true"></span></a>
 					<?php endif; ?>
 				</h3>
 				<?php endif; ?>
@@ -61,7 +69,7 @@ if ($this->maxLevel != 0 && count($this->children[$this->category->id]) > 0) : ?
 				<?php if ($this->params->get('show_subcat_desc') == 1) : ?>
 					<?php if ($child->description) : ?>
 						<div class="category-desc">
-							<?php echo JHtml::_('content.prepare', $child->description, '', 'com_blog.category'); ?>
+							<?php echo HTMLHelper::_('content.prepare', $child->description, '', 'com_blog.category'); ?>
 						</div>
 					<?php endif; ?>
 				<?php endif; ?>
