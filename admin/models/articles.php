@@ -9,6 +9,18 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\String\PunycodeHelper;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\UCM\UCMType;
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -57,7 +69,7 @@ class BlogModelArticles extends JModelList
 				'rating_count', 'rating',
 			);
 
-			if (JLanguageAssociations::isEnabled())
+			if (Associations::isEnabled())
 			{
 				$config['filter_fields'][] = 'association';
 			}
@@ -80,7 +92,7 @@ class BlogModelArticles extends JModelList
 	 */
 	protected function populateState($ordering = 'a.id', $direction = 'desc')
 	{
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		$forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
 
@@ -180,7 +192,7 @@ class BlogModelArticles extends JModelList
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
-		$user  = JFactory::getUser();
+		$user  = Factory::getUser();
 
 		// Select the required fields from the table.
 		$query->select(
@@ -219,7 +231,7 @@ class BlogModelArticles extends JModelList
 			->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
 		// Join on voting table
-		if (JPluginHelper::isEnabled('content', 'vote'))
+		if (PluginHelper::isEnabled('content', 'vote'))
 		{
 			$query->select('COALESCE(NULLIF(ROUND(v.rating_sum  / v.rating_count, 0), 0), 0) AS rating,
 					COALESCE(NULLIF(v.rating_count, 0), 0) as rating_count')
@@ -227,7 +239,7 @@ class BlogModelArticles extends JModelList
 		}
 
 		// Join over the associations.
-		if (JLanguageAssociations::isEnabled())
+		if (Associations::isEnabled())
 		{
 			$subQuery = $db->getQuery(true)
 				->select('COUNT(' . $db->quoteName('asso1.id') . ') > 1')
@@ -290,7 +302,7 @@ class BlogModelArticles extends JModelList
 		if (count($categoryId))
 		{
 			$categoryId = ArrayHelper::toInteger($categoryId);
-			$categoryTable = JTable::getInstance('Category', 'JTable');
+			$categoryTable = Table::getInstance('Category', 'Table');
 			$subCatItemsWhere = array();
 
 			foreach ($categoryId as $filter_catid)

@@ -8,15 +8,25 @@
  */
 
 defined('_JEXEC') or die;
-JHtml::_('behavior.tabstate');
 
-if (!JFactory::getUser()->authorise('core.manage', 'com_blog'))
+// use Joomla\CMS\Access\Exception\NotAllowed;
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Version;
+
+if(Version::MAJOR_VERSION < 4)
 {
-	throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+	HTMLHelper::_('behavior.tabstate');
+}
+
+if (!Factory::getUser()->authorise('core.manage', 'com_blog'))
+{
+	throw new Access\Exception\NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 
 JLoader::register('BlogHelper', __DIR__ . '/helpers/blog.php');
 
 $controller = JControllerLegacy::getInstance('Blog');
-$controller->execute(JFactory::getApplication()->input->get('task'));
+$controller->execute(Factory::getApplication()->input->get('task'));
 $controller->redirect();

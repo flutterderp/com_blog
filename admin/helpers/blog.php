@@ -9,6 +9,13 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Access\Access;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+
 /**
  * Blog component helper.
  *
@@ -30,31 +37,31 @@ class BlogHelper extends JHelperContent
 	public static function addSubmenu($vName)
 	{
 		JHtmlSidebar::addEntry(
-			JText::_('JGLOBAL_ARTICLES'),
+			Text::_('JGLOBAL_ARTICLES'),
 			'index.php?option=com_blog&view=articles',
 			$vName == 'articles'
 		);
 		JHtmlSidebar::addEntry(
-			JText::_('COM_BLOG_SUBMENU_CATEGORIES'),
+			Text::_('COM_BLOG_SUBMENU_CATEGORIES'),
 			'index.php?option=com_categories&extension=com_blog',
 			$vName == 'categories'
 		);
 
 		JHtmlSidebar::addEntry(
-			JText::_('COM_BLOG_SUBMENU_FEATURED'),
+			Text::_('COM_BLOG_SUBMENU_FEATURED'),
 			'index.php?option=com_blog&view=featured',
 			$vName == 'featured'
 		);
 
-		if (JComponentHelper::isEnabled('com_fields') && JComponentHelper::getParams('com_blog')->get('custom_fields_enable', '1'))
+		if (ComponentHelper::isEnabled('com_fields') && ComponentHelper::getParams('com_blog')->get('custom_fields_enable', '1'))
 		{
 			JHtmlSidebar::addEntry(
-				JText::_('JGLOBAL_FIELDS'),
+				Text::_('JGLOBAL_FIELDS'),
 				'index.php?option=com_fields&context=com_blog.article',
 				$vName == 'fields.fields'
 			);
 			JHtmlSidebar::addEntry(
-				JText::_('JGLOBAL_FIELD_GROUPS'),
+				Text::_('JGLOBAL_FIELD_GROUPS'),
 				'index.php?option=com_fields&view=groups&context=com_blog.article',
 				$vName == 'fields.groups'
 			);
@@ -68,14 +75,14 @@ class BlogHelper extends JHelperContent
 	 *
 	 * @return  string  The filtered string
 	 *
-	 * @deprecated  4.0  Use JComponentHelper::filterText() instead.
+	 * @deprecated  4.0  Use ComponentHelper::filterText() instead.
 	 */
 	public static function filterText($text)
 	{
 		try
 		{
 			JLog::add(
-				sprintf('%s() is deprecated. Use JComponentHelper::filterText() instead', __METHOD__),
+				sprintf('%s() is deprecated. Use ComponentHelper::filterText() instead', __METHOD__),
 				JLog::WARNING,
 				'deprecated'
 			);
@@ -85,7 +92,7 @@ class BlogHelper extends JHelperContent
 			// Informational log only
 		}
 
-		return JComponentHelper::filterText($text);
+		return ComponentHelper::filterText($text);
 	}
 
 	/**
@@ -147,7 +154,7 @@ class BlogHelper extends JHelperContent
 	 */
 	public static function validateSection($section)
 	{
-		if (JFactory::getApplication()->isClient('site'))
+		if (Factory::getApplication()->isClient('site'))
 		{
 			// On the front end we need to map some sections
 			switch ($section)
@@ -180,11 +187,11 @@ class BlogHelper extends JHelperContent
 	 */
 	public static function getContexts()
 	{
-		JFactory::getLanguage()->load('com_blog', JPATH_ADMINISTRATOR);
+		Factory::getLanguage()->load('com_blog', JPATH_ADMINISTRATOR);
 
 		$contexts = array(
-			'com_blog.article'    => JText::_('COM_BLOG'),
-			'com_blog.categories' => JText::_('JCATEGORY')
+			'com_blog.article'    => Text::_('COM_BLOG'),
+			'com_blog.categories' => Text::_('JCATEGORY')
 		);
 
 		return $contexts;

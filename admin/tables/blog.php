@@ -15,10 +15,15 @@ use Joomla\CMS\Access\Rules;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Table\Table;
 use Joomla\CMS\Table\Observer\Tags;
 use Joomla\CMS\Table\Observer\ContentHistory as ContentHistoryObserver;
 use Joomla\CMS\Tag\TaggableTableTrait;
+use Joomla\CMS\Tag\TaggableTableInterface;
 use Joomla\CMS\Version;
+use Joomla\CMS\Versioning\VersionableTableInterface;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
@@ -29,22 +34,43 @@ use Joomla\Utilities\ArrayHelper;
  * @since       1.5
  * @deprecated  3.1.4 Class will be removed upon completion of transition to UCM
  */
-class Blog extends Table
+
+if(Version::MAJOR_VERSION === 4)
+{
+	abstract class BlogBaseTable extends Table implements VersionableTableInterface, TaggableTableInterface
+	{
+		use TaggableTableTrait;
+	}
+}
+else
+{
+	class BlogBaseTable extends Table { }
+}
+
+class Blog extends BlogBaseTable
 {
 	/**
 	 * Constructor
 	 *
-	 * @param   \JDatabaseDriver  $db  A database connector object
+	 * @param   DatabaseDriver  $db  A database connector object
 	 *
 	 * @since   1.5
 	 * @deprecated  3.1.4 Class will be removed upon completion of transition to UCM
 	 */
-	public function __construct(\JDatabaseDriver $db)
+	public function __construct(&$db)
 	{
+		if(Version::MAJOR_VERSION === 4)
+		{
+			$this->typeAlias = 'com_blog.article';
+		}
+
 		parent::__construct('#__blog', 'id', $db);
 
-		Tags::createObserver($this, array('typeAlias' => 'com_blog.article'));
-		ContentHistoryObserver::createObserver($this, array('typeAlias' => 'com_blog.article'));
+		if(Version::MAJOR_VERSION < 4)
+		{
+			Tags::createObserver($this, array('typeAlias' => 'com_blog.article'));
+			ContentHistoryObserver::createObserver($this, array('typeAlias' => 'com_blog.article'));
+		}
 
 		// Set the alias since the column is called state
 		$this->setColumnAlias('published', 'state');
@@ -222,7 +248,7 @@ class Blog extends Table
 
 		if (trim(str_replace('-', '', $this->alias)) == '')
 		{
-			$this->alias = \Factory::getDate()->format('Y-m-d-H-i-s');
+			$this->alias = Factory::getDate()->format('Y-m-d-H-i-s');
 		}
 
 		if (trim(str_replace('&nbsp;', '', $this->fulltext)) == '')
@@ -339,8 +365,8 @@ class Blog extends Table
 	 */
 	public function store($updateNulls = false)
 	{
-		$date = \Factory::getDate();
-		$user = \Factory::getUser();
+		$date = Factory::getDate();
+		$user = Factory::getUser();
 
 		$this->modified = $date->toSql();
 
@@ -375,5 +401,17 @@ class Blog extends Table
 		}
 
 		return parent::store($updateNulls);
+	}
+
+	/**
+	 * Get the type alias for UCM features
+	 *
+	 * @return  string  The alias as described above
+	 *
+	 * @since   4.0.0
+	 */
+	public function getTypeAlias()
+	{
+		return $this->typeAlias;
 	}
 }

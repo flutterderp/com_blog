@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Table\Table;
+
 JLoader::register('BlogModelArticle', __DIR__ . '/article.php');
 
 /**
@@ -31,7 +33,7 @@ class BlogModelFeature extends BlogModelArticle
 	 */
 	public function getTable($type = 'Featured', $prefix = 'BlogTable', $config = array())
 	{
-		return JTable::getInstance($type, $prefix, $config);
+		return Table::getInstance($type, $prefix, $config);
 	}
 
 	/**

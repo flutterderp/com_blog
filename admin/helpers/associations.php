@@ -10,6 +10,8 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Association\AssociationExtensionHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Table\Table;
 
 /**
  * Blog associations helper.
@@ -69,7 +71,7 @@ class BlogAssociationsHelper extends AssociationExtensionHelper
 		}
 
 		// Get the associations.
-		$associations = JLanguageAssociations::getAssociations(
+		$associations = Associations::getAssociations(
 			$this->extension,
 			$type['tables']['a'],
 			$context,
@@ -88,7 +90,7 @@ class BlogAssociationsHelper extends AssociationExtensionHelper
 	 * @param   string  $typeName  The item type
 	 * @param   int     $id        The id of item for which we need the associated items
 	 *
-	 * @return  JTable|null
+	 * @return  Table|null
 	 *
 	 * @since   3.7.0
 	 */
@@ -104,11 +106,11 @@ class BlogAssociationsHelper extends AssociationExtensionHelper
 		switch ($typeName)
 		{
 			case 'article':
-				$table = JTable::getInstance('Blog');
+				$table = Table::getInstance('Blog');
 				break;
 
 			case 'category':
-				$table = JTable::getInstance('Category');
+				$table = Table::getInstance('Category');
 				break;
 		}
 

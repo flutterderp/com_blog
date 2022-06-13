@@ -9,6 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -55,7 +59,7 @@ class BlogControllerArticle extends JControllerForm
 		if ($categoryId)
 		{
 			// If the category has been passed in the data or URL check it.
-			$allow = JFactory::getUser()->authorise('core.create', 'com_blog.category.' . $categoryId);
+			$allow = Factory::getUser()->authorise('core.create', 'com_blog.category.' . $categoryId);
 		}
 
 		if ($allow === null)
@@ -80,7 +84,7 @@ class BlogControllerArticle extends JControllerForm
 	protected function allowEdit($data = array(), $key = 'id')
 	{
 		$recordId = (int) isset($data[$key]) ? $data[$key] : 0;
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// Zero record (id:0), return component edit permission by calling parent controller method
 		if (!$recordId)
@@ -130,7 +134,7 @@ class BlogControllerArticle extends JControllerForm
 		$model = $this->getModel('Article', '', array());
 
 		// Preset the redirect
-		$this->setRedirect(JRoute::_('index.php?option=com_blog&view=articles' . $this->getRedirectToListAppend(), false));
+		$this->setRedirect(Route::_('index.php?option=com_blog&view=articles' . $this->getRedirectToListAppend(), false));
 
 		return parent::batch($model);
 	}

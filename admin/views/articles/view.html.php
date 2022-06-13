@@ -158,11 +158,11 @@ class BlogViewArticles extends JViewLegacy
 			HTMLHelper::_('select.option', '10', Text::_('J10')),
 		);
 
+		$tpl = (Version::MAJOR_VERSION === 4) ? 'jfour' : 'jthree';
+
 		// We don't need toolbar in the modal window.
 		if ($this->getLayout() !== 'modal')
 		{
-			$tpl = (Version::MAJOR_VERSION === 4) ? 'jfour' : 'jthree';
-
 			$this->addToolbar();
 
 			if(Version::MAJOR_VERSION < 4)
@@ -211,7 +211,7 @@ class BlogViewArticles extends JViewLegacy
 		$user  = Version::MAJOR_VERSION === 4 ? Factory::getApplication()->getIdentity() : Factory::getUser();
 
 		// Get the toolbar object instance
-		$bar = Toolbar::getInstance('toolbar');
+		$toolbar = Toolbar::getInstance('toolbar');
 
 		ToolbarHelper::title(Text::_('COM_BLOG_ARTICLES_TITLE'), 'stack article');
 
@@ -342,7 +342,7 @@ class BlogViewArticles extends JViewLegacy
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				$bar->appendButton('Custom', $dhtml, 'batch');
+				$toolbar->appendButton('Custom', $dhtml, 'batch');
 			}
 
 			if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete'))
@@ -354,7 +354,7 @@ class BlogViewArticles extends JViewLegacy
 				ToolbarHelper::trash('articles.trash');
 			}
 
-			if ($user->authorise('core.admin', 'com_blog') || $user->authorise('core.options', 'com_blog'))
+			if ($canDo->get('core.admin') || $canDo->get('core.options'))
 			{
 				ToolbarHelper::preferences('com_blog');
 			}
