@@ -65,6 +65,8 @@ class BlogViewFeatured extends JViewLegacy
 		// Flag indicates to not add limitstart=0 to URL
 		$pagination->hideEmptyLimitstart = true;
 
+		$offset = $this->state->get('list.offset', 0);
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{
@@ -95,7 +97,6 @@ class BlogViewFeatured extends JViewLegacy
 			}
 
 			$item->event = new stdClass;
-			$dispatcher  = JEventDispatcher::getInstance();
 
 			// Old plugins: Ensure that text property is available
 			if (!isset($item->text))
@@ -103,18 +104,18 @@ class BlogViewFeatured extends JViewLegacy
 				$item->text = $item->introtext;
 			}
 
-			$dispatcher->trigger('onContentPrepare', array ('com_blog.featured', &$item, &$item->params, 0));
+			$app->triggerEvent('onContentPrepare', array ('com_blog.featured', &$item, &$item->params, $offset));
 
 			// Old plugins: Use processed text as introtext
 			$item->introtext = $item->text;
 
-			$results = $dispatcher->trigger('onContentAfterTitle', array('com_blog.featured', &$item, &$item->params, 0));
+			$results = $app->triggerEvent('onContentAfterTitle', array('com_blog.featured', &$item, &$item->params, $offset));
 			$item->event->afterDisplayTitle = trim(implode("\n", $results));
 
-			$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_blog.featured', &$item, &$item->params, 0));
+			$results = $app->triggerEvent('onContentBeforeDisplay', array('com_blog.featured', &$item, &$item->params, $offset));
 			$item->event->beforeDisplayContent = trim(implode("\n", $results));
 
-			$results = $dispatcher->trigger('onContentAfterDisplay', array('com_blog.featured', &$item, &$item->params, 0));
+			$results = $app->triggerEvent('onContentAfterDisplay', array('com_blog.featured', &$item, &$item->params, $offset));
 			$item->event->afterDisplayContent = trim(implode("\n", $results));
 		}
 

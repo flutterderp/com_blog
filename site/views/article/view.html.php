@@ -9,7 +9,14 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\Categories;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\TagsHelper;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\Registry\Registry;
 
 /**
@@ -38,9 +45,8 @@ class BlogViewArticle extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app        = JFactory::getApplication();
-		$user       = JFactory::getUser();
-		$dispatcher = JEventDispatcher::getInstance();
+		$app        = Factory::getApplication();
+		$user       = Factory::getUser();
 
 		$this->item  = $this->get('Item');
 		$this->print = $app->input->getBool('print');
@@ -50,14 +56,12 @@ class BlogViewArticle extends JViewLegacy
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{
-			JError::raiseWarning(500, implode("\n", $errors));
-
-			return false;
+			throw new Exception(implode("\n", $errors), 500);
 		}
 
 		// Create a shortcut for $item.
 		$item            = $this->item;
-		$item->tagLayout = new JLayoutFile('joomla.content.tags');
+		$item->tagLayout = new FileLayout('joomla.content.tags');
 
 		// Add router helpers.
 		$item->slug        = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
@@ -71,7 +75,7 @@ class BlogViewArticle extends JViewLegacy
 		}
 
 		// TODO: Change based on shownoauth
-		$item->readmore_link = JRoute::_(BlogHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language));
+		$item->readmore_link = Route::_(BlogHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language));
 
 		// Merge article params. If this is single-article view, menu params override article params
 		// Otherwise, article params override menu item params
@@ -136,7 +140,7 @@ class BlogViewArticle extends JViewLegacy
 		// Check the view access to the article (the model has already computed the values).
 		if ($item->params->get('access-view') == false && ($item->params->get('show_noauth', '0') == '0'))
 		{
-			$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
 			$app->setHeader('status', 403, true);
 
 			return;
@@ -153,13 +157,13 @@ class BlogViewArticle extends JViewLegacy
 			if ($this->user->get('guest'))
 			{
 				$return = base64_encode(JUri::getInstance());
-				$login_url_with_return = JRoute::_('index.php?option=com_users&view=login&return=' . $return);
-				$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'notice');
+				$login_url_with_return = Route::_('index.php?option=com_users&view=login&return=' . $return);
+				$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'notice');
 				$app->redirect($login_url_with_return, 403);
 			}
 			else
 			{
-				$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+				$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
 				$app->setHeader('status', 403, true);
 
 				return;
@@ -183,7 +187,7 @@ class BlogViewArticle extends JViewLegacy
 			$item->text = $item->introtext;
 		}
 
-		$item->tags = new JHelperTags;
+		$item->tags = new TagsHelper;
 		$item->tags->getItemTags('com_blog.article', $this->item->id);
 
 		if ($item->params->get('show_associations'))
@@ -204,17 +208,17 @@ class BlogViewArticle extends JViewLegacy
 		$item->sources = $registry->toArray();
 
 		// Process the content plugins.
-		JPluginHelper::importPlugin('content');
-		$dispatcher->trigger('onContentPrepare', array ('com_blog.article', &$item, &$item->params, $offset));
+		PluginHelper::importPlugin('content');
+		$app->triggerEvent('onContentPrepare', array ('com_blog.article', &$item, &$item->params, $offset));
 
 		$item->event = new stdClass;
-		$results = $dispatcher->trigger('onContentAfterTitle', array('com_blog.article', &$item, &$item->params, $offset));
+		$results = $app->triggerEvent('onContentAfterTitle', array('com_blog.article', &$item, &$item->params, $offset));
 		$item->event->afterDisplayTitle = trim(implode("\n", $results));
 
-		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_blog.article', &$item, &$item->params, $offset));
+		$results = $app->triggerEvent('onContentBeforeDisplay', array('com_blog.article', &$item, &$item->params, $offset));
 		$item->event->beforeDisplayContent = trim(implode("\n", $results));
 
-		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_blog.article', &$item, &$item->params, $offset));
+		$results = $app->triggerEvent('onContentAfterDisplay', array('com_blog.article', &$item, &$item->params, $offset));
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		// Escape strings for HTML output
@@ -232,7 +236,7 @@ class BlogViewArticle extends JViewLegacy
 	 */
 	protected function _prepareDocument()
 	{
-		$app     = JFactory::getApplication();
+		$app     = Factory::getApplication();
 		$menus   = $app->getMenu();
 		$pathway = $app->getPathway();
 		$title   = null;
@@ -249,7 +253,7 @@ class BlogViewArticle extends JViewLegacy
 		}
 		else
 		{
-			$this->params->def('page_heading', JText::_('JGLOBAL_ARTICLES'));
+			$this->params->def('page_heading', Text::_('JGLOBAL_ARTICLES'));
 		}
 
 		$title = $this->params->get('page_title', '');
@@ -264,7 +268,7 @@ class BlogViewArticle extends JViewLegacy
 			$title = $this->item->params->get('article_page_title', $this->item->title ?: $title);
 
 			$path     = array(array('title' => $this->item->title, 'link' => ''));
-			$category = JCategories::getInstance('Blog')->get($this->item->catid);
+			$category = Categories::getInstance('Blog')->get($this->item->catid);
 
 			while ($category && (!isset($menu->query['option']) || $menu->query['option'] !== 'com_blog' || $menu->query['view'] === 'article'
 				|| $id != $category->id) && $category->id !== 'root')
@@ -288,11 +292,11 @@ class BlogViewArticle extends JViewLegacy
 		}
 		elseif ($app->get('sitename_pagetitles', 0) == 1)
 		{
-			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+			$title = Text::sprintf('JPAGETITLE', $app->get('sitename'), $title);
 		}
 		elseif ($app->get('sitename_pagetitles', 0) == 2)
 		{
-			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+			$title = Text::sprintf('JPAGETITLE', $title, $app->get('sitename'));
 		}
 
 		if (empty($title))
@@ -346,7 +350,7 @@ class BlogViewArticle extends JViewLegacy
 		{
 			$this->item->title = $this->item->title . ' - ' . $this->item->page_title;
 			$this->document->setTitle(
-				$this->item->page_title . ' - ' . JText::sprintf('PLG_CONTENT_PAGEBREAK_PAGE_NUM', $this->state->get('list.offset') + 1)
+				$this->item->page_title . ' - ' . Text::sprintf('PLG_CONTENT_PAGEBREAK_PAGE_NUM', $this->state->get('list.offset') + 1)
 			);
 		}
 
@@ -360,8 +364,8 @@ class BlogViewArticle extends JViewLegacy
 		$jhtml_css_attribs = array();
 		$jhtml_js_attribs  = array('defer' => true);
 
-		HtmlHelper::stylesheet('com_blog/article-styles.css', $jhtml_options, $jhtml_css_attribs);
-		HtmlHelper::script('com_blog/article-js.js', $jhtml_options, $jhtml_js_attribs);
+		HTMLHelper::stylesheet('com_blog/article-styles.css', $jhtml_options, $jhtml_css_attribs);
+		HTMLHelper::script('com_blog/article-js.js', $jhtml_options, $jhtml_js_attribs);
 
 		if ($this->print)
 		{

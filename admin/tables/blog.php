@@ -370,6 +370,26 @@ class Blog extends BlogBaseTable
 
 		$this->modified = $date->toSql();
 
+		if (!$this->checked_out_time)
+		{
+			$this->checked_out_time = $this->_db->getNullDate();
+		}
+
+		if (!$this->publish_up)
+		{
+			$this->publish_up = $this->_db->getNullDate();
+		}
+
+		if (!$this->publish_down)
+		{
+			$this->publish_down = $this->_db->getNullDate();
+		}
+
+		if (!$this->hits)
+		{
+			$this->hits = 0;
+		}
+
 		if ($this->id)
 		{
 			// Existing item

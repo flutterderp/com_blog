@@ -12,10 +12,14 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Version;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 
-HTMLHelper::_('behavior.caption');
+if(Version::MAJOR_VERSION < 4)
+{
+	HTMLHelper::_('behavior.caption');
+}
 ?>
 <div class="category-list<?php echo $this->pageclass_sfx; ?>">
 

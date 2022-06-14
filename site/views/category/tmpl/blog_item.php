@@ -9,29 +9,32 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Version;
 
 // Create a shortcut for params.
 $params     = $this->item->params;
 $tpl        = Factory::getApplication()->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
-HTMLHelpers::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $canEdit    = $this->item->params->get('access-edit');
 $info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
 $assocParam = (Associations::isEnabled() && $params->get('show_associations'));
-
-$currentDate   = Factory::getDate()->format('Y-m-d H:i:s');
-$isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentDate)
-	|| ($this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate());
-
+$currentDate          = Factory::getDate()->format('Y-m-d H:i:s');
+$nullDate             = Factory::getDbo()->getNullDate();
+$conditionUnpublished = $this->item->state == ((Version::MAJOR_VERSION === 4) ? ContentComponent::CONDITION_UNPUBLISHED : 0);
+$isNotPublishedYet    = $this->item->publish_up > $currentDate;
+$isExpired            = !is_null($this->item->publish_down) && $this->item->publish_down !== $nullDate && $this->item->publish_down < $currentDate;
 ?>
 <link itemprop="mainEntityOfPage" href="<?php echo Route::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
 <meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
@@ -44,14 +47,14 @@ $isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentD
 </span>
 
 <?php if(!$params->get('show_modify_date')) : ?>
-	<time datetime="<?php echo HTMLHelpers::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+	<time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
 <?php endif; ?>
 
 <?php if(!$params->get('show_publish_date')) : ?>
-	<time datetime="<?php echo HTMLHelpers::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+	<time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
 <?php endif; ?>
 
-<?php if ($isUnpublished) : ?>
+<?php if ($conditionUnpublished) : ?>
 	<div class="system-unpublished">
 <?php endif; ?>
 
@@ -110,7 +113,7 @@ $isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentD
 
 <?php endif; ?>
 
-<?php if ($isUnpublished) : ?>
+<?php if ($conditionUnpublished) : ?>
 </div>
 <?php endif; ?>
 

@@ -88,7 +88,8 @@ class BlogViewCategory extends JViewCategory
 		$this->vote = PluginHelper::isEnabled('content', 'vote');
 
 		PluginHelper::importPlugin('content');
-		$dispatcher = JEventDispatcher::getInstance();
+		$app    = Factory::getApplication();
+		$offset = $this->state->get('list.offset', 0);
 
 		// Compute the article slugs and prepare introtext (runs content plugins).
 		foreach ($this->items as $item)
@@ -112,18 +113,18 @@ class BlogViewCategory extends JViewCategory
 				$item->text = $item->introtext;
 			}
 
-			$dispatcher->trigger('onContentPrepare', array ('com_blog.category', &$item, &$item->params, 0));
+			$app->triggerEvent('onContentPrepare', array ('com_blog.category', &$item, &$item->params, $offset));
 
 			// Old plugins: Use processed text as introtext
 			$item->introtext = $item->text;
 
-			$results = $dispatcher->trigger('onContentAfterTitle', array('com_blog.category', &$item, &$item->params, 0));
+			$results = $app->triggerEvent('onContentAfterTitle', array('com_blog.category', &$item, &$item->params, 0));
 			$item->event->afterDisplayTitle = trim(implode("\n", $results));
 
-			$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_blog.category', &$item, &$item->params, 0));
+			$results = $app->triggerEvent('onContentBeforeDisplay', array('com_blog.category', &$item, &$item->params, 0));
 			$item->event->beforeDisplayContent = trim(implode("\n", $results));
 
-			$results = $dispatcher->trigger('onContentAfterDisplay', array('com_blog.category', &$item, &$item->params, 0));
+			$results = $app->triggerEvent('onContentAfterDisplay', array('com_blog.category', &$item, &$item->params, 0));
 			$item->event->afterDisplayContent = trim(implode("\n", $results));
 		}
 
@@ -166,7 +167,7 @@ class BlogViewCategory extends JViewCategory
 
 		// Because the application sets a default page title,
 		// we need to get it from the menu item itself
-		$app    = Factory::getApplication();
+		// $app    = Factory::getApplication();
 		$active = $app->getMenu()->getActive();
 
 		if ($active

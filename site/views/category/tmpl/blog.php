@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
@@ -17,21 +18,25 @@ use Joomla\CMS\Version;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 
-HTMLHelper::_('behavior.caption');
+if(Version::MAJOR_VERSION < 4)
+{
+	HTMLHelper::_('behavior.caption');
+}
 
-$dispatcher = JEventDispatcher::getInstance();
+$app    = Factory::getApplication();
+$offset = $app->get('list.offset', 0);
 
 $this->category->text = $this->category->description;
-$dispatcher->trigger('onContentPrepare', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$app->triggerEvent('onContentPrepare', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $this->category->description = $this->category->text;
 
-$results = $dispatcher->trigger('onContentAfterTitle', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$results = $app->triggerEvent('onContentAfterTitle', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $afterDisplayTitle = trim(implode("\n", $results));
 
-$results = $dispatcher->trigger('onContentBeforeDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$results = $app->triggerEvent('onContentBeforeDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $beforeDisplayContent = trim(implode("\n", $results));
 
-$results = $dispatcher->trigger('onContentAfterDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$results = $app->triggerEvent('onContentAfterDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $afterDisplayContent = trim(implode("\n", $results));
 
 if(Version::MAJOR_VERSION === 4)

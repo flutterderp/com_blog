@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Associations;
@@ -26,10 +27,12 @@ $info    = $this->item->params->get('info_block_position', 0);
 // Check if associations are implemented. If they are, define the parameter.
 $assocParam = (Associations::isEnabled() && $params->get('show_associations'));
 
-$currentDate       = Factory::getDate()->format('Y-m-d H:i:s');
-$isExpired         = $this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate();
-$isNotPublishedYet = $this->item->publish_up > $currentDate;
-$isUnpublished     = $this->item->state == 0 || $isNotPublishedYet || $isExpired;
+$currentDate          = Factory::getDate()->format('Y-m-d H:i:s');
+$nullDate             = Factory::getDbo()->getNullDate();
+$conditionUnpublished = $this->item->state == ((Version::MAJOR_VERSION === 4) ? ContentComponent::CONDITION_UNPUBLISHED : 0);
+$isNotPublishedYet    = $this->item->publish_up > $currentDate;
+$isExpired            = !is_null($this->item->publish_down) && $this->item->publish_down !== $nullDate && $this->item->publish_down < $currentDate;
+$isUnpublished        = $this->item->state == $conditionUnpublished || $isNotPublishedYet || $isExpired;
 ?>
 
 <?php if ($isUnpublished) : ?>
@@ -48,7 +51,7 @@ $isUnpublished     = $this->item->state == 0 || $isNotPublishedYet || $isExpired
 	</h2>
 <?php endif; ?>
 
-<?php if ($this->item->state == 0) : ?>
+<?php if ($this->item->state == $conditionUnpublished) : ?>
 	<span class="label label-warning"><?php echo Text::_('JUNPUBLISHED'); ?></span>
 <?php endif; ?>
 <?php if ($isNotPublishedYet) : ?>
