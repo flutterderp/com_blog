@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
+
 /**
  * HTML View class for the Blog component
  *
@@ -35,7 +40,7 @@ class BlogViewCategory extends JViewCategoryfeed
 	protected function reconcileNames($item)
 	{
 		// Get description, intro_image, author and date
-		$app               = JFactory::getApplication();
+		$app               = Factory::getApplication();
 		$params            = $app->getParams();
 		$item->description = '';
 		$obj = json_decode($item->images);
@@ -56,9 +61,9 @@ class BlogViewCategory extends JViewCategoryfeed
 			$item->slug = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
 
 			// URL link to article
-			$link = JRoute::_(BlogHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language), true, $app->get('force_ssl') == 2 ? \JRoute::TLS_FORCE : \JRoute::TLS_IGNORE, true);
+			$link = Route::_(BlogHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language), true, $app->get('force_ssl') == 2 ? \Route::TLS_FORCE : \Route::TLS_IGNORE, true);
 
-			$item->description .= '<p class="feed-readmore"><a target="_blank" href="' . $link . '">' . JText::_('COM_BLOG_FEED_READMORE') . '</a></p>';
+			$item->description .= '<p class="feed-readmore"><a target="_blank" href="' . $link . '">' . Text::_('COM_BLOG_FEED_READMORE') . '</a></p>';
 		}
 
 		$item->author = $item->created_by_alias ?: $item->author;

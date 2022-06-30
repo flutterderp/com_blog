@@ -9,25 +9,44 @@
 
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Version;
 
-JHtml::_('behavior.caption');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 
-$dispatcher = JEventDispatcher::getInstance();
+if(Version::MAJOR_VERSION < 4)
+{
+	HTMLHelper::_('behavior.caption');
+}
+
+$app    = Factory::getApplication();
+$offset = $app->get('list.offset', 0);
 
 $this->category->text = $this->category->description;
-$dispatcher->trigger('onContentPrepare', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$app->triggerEvent('onContentPrepare', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $this->category->description = $this->category->text;
 
-$results = $dispatcher->trigger('onContentAfterTitle', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$results = $app->triggerEvent('onContentAfterTitle', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $afterDisplayTitle = trim(implode("\n", $results));
 
-$results = $dispatcher->trigger('onContentBeforeDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$results = $app->triggerEvent('onContentBeforeDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $beforeDisplayContent = trim(implode("\n", $results));
 
-$results = $dispatcher->trigger('onContentAfterDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, 0));
+$results = $app->triggerEvent('onContentAfterDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $afterDisplayContent = trim(implode("\n", $results));
 
+if(Version::MAJOR_VERSION === 4)
+{
+	$pagesTotal = $this->pagination->pagesTotal;
+}
+else
+{
+	$pagesTotal = $this->pagination->get('pages.total');
+}
 ?>
 <div class="blog<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Blog">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -46,7 +65,7 @@ $afterDisplayContent = trim(implode("\n", $results));
 	<?php echo $afterDisplayTitle; ?>
 
 	<?php if ($this->params->get('show_cat_tags', 1) && !empty($this->category->tags->itemTags)) : ?>
-		<?php $this->category->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
+		<?php $this->category->tagLayout = new FileLayout('joomla.content.tags'); ?>
 		<?php echo $this->category->tagLayout->render($this->category->tags->itemTags); ?>
 	<?php endif; ?>
 
@@ -57,7 +76,7 @@ $afterDisplayContent = trim(implode("\n", $results));
 			<?php endif; ?>
 			<?php echo $beforeDisplayContent; ?>
 			<?php if ($this->params->get('show_description') && $this->category->description) : ?>
-				<?php echo JHtml::_('content.prepare', $this->category->description, '', 'com_blog.category'); ?>
+				<?php echo HTMLHelper::_('content.prepare', $this->category->description, '', 'com_blog.category'); ?>
 			<?php endif; ?>
 			<?php echo $afterDisplayContent; ?>
 		</div>
@@ -65,7 +84,7 @@ $afterDisplayContent = trim(implode("\n", $results));
 
 	<?php if (empty($this->lead_items) && empty($this->link_items) && empty($this->intro_items)) : ?>
 		<?php if ($this->params->get('show_no_articles', 1)) : ?>
-			<p><?php echo JText::_('COM_BLOG_NO_ARTICLES'); ?></p>
+			<p><?php echo Text::_('COM_BLOG_NO_ARTICLES'); ?></p>
 		<?php endif; ?>
 	<?php endif; ?>
 
@@ -123,11 +142,11 @@ $afterDisplayContent = trim(implode("\n", $results));
 	<?php if ($this->maxLevel != 0 && !empty($this->children[$this->category->id])) : ?>
 		<div class="cat-children">
 			<?php if ($this->params->get('show_category_heading_title_text', 1) == 1) : ?>
-				<h3> <?php echo JText::_('JGLOBAL_SUBCATEGORIES'); ?> </h3>
+				<h3> <?php echo Text::_('JGLOBAL_SUBCATEGORIES'); ?> </h3>
 			<?php endif; ?>
 			<?php echo $this->loadTemplate('children'); ?> </div>
 	<?php endif; ?>
-	<?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) : ?>
+	<?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($pagesTotal > 1)) : ?>
 		<div class="pagination">
 			<?php if ($this->params->def('show_pagination_results', 1)) : ?>
 				<p class="counter pull-right"> <?php echo $this->pagination->getPagesCounter(); ?> </p>

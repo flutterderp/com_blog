@@ -9,6 +9,12 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\Utilities\ArrayHelper;
 
 JLoader::register('BlogHelper', JPATH_ADMINISTRATOR . '/components/com_blog/helpers/blog.php');
@@ -35,7 +41,7 @@ abstract class JHtmlBlogAdministrator
 		$html = '';
 
 		// Get the associations
-		if ($associations = JLanguageAssociations::getAssociations('com_blog', '#__blog', 'com_blog.item', $articleid))
+		if ($associations = Associations::getAssociations('com_blog', '#__blog', 'com_blog.item', $articleid))
 		{
 			foreach ($associations as $tag => $associated)
 			{
@@ -43,7 +49,7 @@ abstract class JHtmlBlogAdministrator
 			}
 
 			// Get the associated menu items
-			$db = JFactory::getDbo();
+			$db = Factory::getDbo();
 			$query = $db->getQuery(true)
 				->select('c.*')
 				->select('l.sef as lang_sef')
@@ -72,9 +78,9 @@ abstract class JHtmlBlogAdministrator
 				foreach ($items as &$item)
 				{
 					$text    = $item->lang_sef ? strtoupper($item->lang_sef) : 'XX';
-					$url     = JRoute::_('index.php?option=com_blog&task=article.edit&id=' . (int) $item->id);
+					$url     = Route::_('index.php?option=com_blog&task=article.edit&id=' . (int) $item->id);
 
-					$tooltip = htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8') . '<br />' . JText::sprintf('JCATEGORY_SPRINTF', $item->category_title);
+					$tooltip = htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8') . '<br />' . Text::sprintf('JCATEGORY_SPRINTF', $item->category_title);
 					$classes = 'hasPopover label label-association label-' . $item->lang_sef;
 
 					$item->link = '<a href="' . $url . '" title="' . $item->language_title . '" class="' . $classes
@@ -83,9 +89,9 @@ abstract class JHtmlBlogAdministrator
 				}
 			}
 
-			JHtml::_('bootstrap.popover');
+			HTMLHelper::_('bootstrap.popover');
 
-			$html = JLayoutHelper::render('joomla.content.associations', $items);
+			$html = LayoutHelper::render('joomla.content.associations', $items);
 		}
 
 		return $html;
@@ -102,7 +108,7 @@ abstract class JHtmlBlogAdministrator
 	 */
 	public static function featured($value = 0, $i = 0, $canChange = true)
 	{
-		JHtml::_('bootstrap.tooltip');
+		HTMLHelper::_('bootstrap.tooltip');
 
 		// Array of image, task, title, action
 		$states = array(
@@ -115,13 +121,13 @@ abstract class JHtmlBlogAdministrator
 		if ($canChange)
 		{
 			$html = '<a href="#" onclick="return listItemTask(\'cb' . $i . '\',\'' . $state[1] . '\')" class="btn btn-micro hasTooltip'
-				. ($value == 1 ? ' active' : '') . '" title="' . JHtml::_('tooltipText', $state[3])
+				. ($value == 1 ? ' active' : '') . '" title="' . HTMLHelper::_('tooltipText', $state[3])
 				. '"><span class="icon-' . $icon . '" aria-hidden="true"></span></a>';
 		}
 		else
 		{
 			$html = '<a class="btn btn-micro hasTooltip disabled' . ($value == 1 ? ' active' : '') . '" title="'
-				. JHtml::_('tooltipText', $state[2]) . '"><span class="icon-' . $icon . '" aria-hidden="true"></span></a>';
+				. HTMLHelper::_('tooltipText', $state[2]) . '"><span class="icon-' . $icon . '" aria-hidden="true"></span></a>';
 		}
 
 		return $html;

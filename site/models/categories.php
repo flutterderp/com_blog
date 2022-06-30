@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\Categories;
+use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
 
 /**
@@ -48,7 +50,7 @@ class BlogModelCategories extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 		$this->setState('filter.extension', $this->_extension);
 
 		// Get the parent id if defined.
@@ -99,19 +101,19 @@ class BlogModelCategories extends JModelList
 
 		if (!isset($this->cache[$store]))
 		{
-			$app = JFactory::getApplication();
-			$menu = $app->getMenu();
+			$app    = Factory::getApplication();
+			$menu   = $app->getMenu();
 			$active = $menu->getActive();
 			$params = new Registry;
 
 			if ($active)
 			{
-				$params->loadString($active->params);
+				$params->loadString($active->getParams());
 			}
 
 			$options = array();
 			$options['countItems'] = $params->get('show_cat_num_articles_cat', 1) || !$params->get('show_empty_categories_cat', 0);
-			$categories = JCategories::getInstance('Blog', $options);
+			$categories = Categories::getInstance('Blog', $options);
 			$this->_parent = $categories->get($this->getState('filter.parentId', 'root'));
 
 			if (is_object($this->_parent))

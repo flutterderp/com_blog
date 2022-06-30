@@ -9,6 +9,17 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\String\PunycodeHelper;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\UCM\UCMType;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
@@ -107,10 +118,10 @@ class BlogModelArticle extends JModelAdmin
 		if (empty($this->batchSet))
 		{
 			// Set some needed variables.
-			$this->user = JFactory::getUser();
+			$this->user = Factory::getUser();
 			$this->table = $this->getTable();
 			$this->tableClassName = get_class($this->table);
-			$this->contentType = new JUcmType;
+			$this->contentType = new UCMType;
 			$this->type = $this->contentType->getTypeByTable($this->tableClassName);
 		}
 
@@ -121,7 +132,7 @@ class BlogModelArticle extends JModelAdmin
 			return false;
 		}
 
-		JPluginHelper::importPlugin('system');
+		PluginHelper::importPlugin('system');
 		$dispatcher = JEventDispatcher::getInstance();
 
 		// Register FieldsHelper
@@ -132,7 +143,7 @@ class BlogModelArticle extends JModelAdmin
 		{
 			if (!$this->user->authorise('core.edit', $contexts[$pk]))
 			{
-				$this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+				$this->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
 
 				return false;
 			}
@@ -150,7 +161,7 @@ class BlogModelArticle extends JModelAdmin
 				else
 				{
 					// Not fatal error
-					$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_BATCH_MOVE_ROW_NOT_FOUND', $pk));
+					$this->setError(Text::sprintf('JLIB_APPLICATION_ERROR_BATCH_MOVE_ROW_NOT_FOUND', $pk));
 					continue;
 				}
 			}
@@ -218,7 +229,7 @@ class BlogModelArticle extends JModelAdmin
 			return false;
 		}
 
-		return JFactory::getUser()->authorise('core.delete', 'com_blog.article.' . (int) $record->id);
+		return Factory::getUser()->authorise('core.delete', 'com_blog.article.' . (int) $record->id);
 	}
 
 	/**
@@ -232,7 +243,7 @@ class BlogModelArticle extends JModelAdmin
 	 */
 	protected function canEditState($record)
 	{
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// Check for existing article.
 		if (!empty($record->id))
@@ -264,7 +275,7 @@ class BlogModelArticle extends JModelAdmin
 		// Set the publish date to now
 		if ($table->state == 1 && (int) $table->publish_up == 0)
 		{
-			$table->publish_up = JFactory::getDate()->toSql();
+			$table->publish_up = Factory::getDate()->toSql();
 		}
 
 		if ($table->state == 1 && intval($table->publish_down) == 0)
@@ -293,7 +304,7 @@ class BlogModelArticle extends JModelAdmin
 	 */
 	public function getTable($type = 'Blog', $prefix = 'Joomla\\CMS\\Table\\', $config = array())
 	{
-		return JTable::getInstance($type, $prefix, $config);
+		return Table::getInstance($type, $prefix, $config);
 	}
 
 	/**
@@ -334,7 +345,7 @@ class BlogModelArticle extends JModelAdmin
 		}
 
 		// Load associated content items
-		$assoc = JLanguageAssociations::isEnabled();
+		$assoc = Associations::isEnabled();
 
 		if ($assoc)
 		{
@@ -342,7 +353,7 @@ class BlogModelArticle extends JModelAdmin
 
 			if ($item->id != null)
 			{
-				$associations = JLanguageAssociations::getAssociations('com_blog', '#__blog', 'com_blog.item', $item->id);
+				$associations = Associations::getAssociations('com_blog', '#__blog', 'com_blog.item', $item->id);
 
 				foreach ($associations as $tag => $association)
 				{
@@ -366,8 +377,8 @@ class BlogModelArticle extends JModelAdmin
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
+		$app = Factory::getApplication();
+		$user = Factory::getUser();
 
 		// Get the form.
 		$form = $this->loadForm('com_blog.article', 'article', array('control' => 'jform', 'load_data' => $loadData));
@@ -377,7 +388,7 @@ class BlogModelArticle extends JModelAdmin
 			return false;
 		}
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		/*
 		 * The front end calls this model and uses a_id to avoid id clashes so we need to check for that first.
@@ -460,12 +471,12 @@ class BlogModelArticle extends JModelAdmin
 		}
 
 		// Prevent messing with article language and category when editing existing article with associations
-		$assoc = JLanguageAssociations::isEnabled();
+		$assoc = Associations::isEnabled();
 
 		// Check if article is associated
 		if ($this->getState('article.id') && $app->isClient('site') && $assoc)
 		{
-			$associations = JLanguageAssociations::getAssociations('com_blog', '#__blog', 'com_blog.item', $id);
+			$associations = Associations::getAssociations('com_blog', '#__blog', 'com_blog.item', $id);
 
 			// Make fields read only
 			if (!empty($associations))
@@ -490,7 +501,7 @@ class BlogModelArticle extends JModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$app  = JFactory::getApplication();
+		$app  = Factory::getApplication();
 		$data = $app->getUserState('com_blog.edit.article.data', array());
 
 		if (empty($data))
@@ -511,7 +522,7 @@ class BlogModelArticle extends JModelAdmin
 				$data->set('catid', $app->input->getInt('catid', (!empty($filters['category_id']) ? $filters['category_id'] : null)));
 				$data->set('language', $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)));
 				$data->set('access',
-					$app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+					$app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : Factory::getConfig()->get('access')))
 				);
 			}
 		}
@@ -537,13 +548,13 @@ class BlogModelArticle extends JModelAdmin
 	 * @return  array|boolean  Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
-	 * @see     JFilterInput
+	 * @see     InputFilter
 	 * @since   3.7.0
 	 */
 	public function validate($form, $data, $group = null)
 	{
 		// Don't allow to change the users if not allowed to access com_users.
-		if (!JFactory::getUser()->authorise('core.manage', 'com_users'))
+		if (!Factory::getUser()->authorise('core.manage', 'com_users'))
 		{
 			if (isset($data['created_by']))
 			{
@@ -556,7 +567,7 @@ class BlogModelArticle extends JModelAdmin
 			}
 		}
 
-		if (!JFactory::getUser()->authorise('core.admin', 'com_blog'))
+		if (!Factory::getUser()->authorise('core.admin', 'com_blog'))
 		{
 			if (isset($data['rules']))
 			{
@@ -578,8 +589,8 @@ class BlogModelArticle extends JModelAdmin
 	 */
 	public function save($data)
 	{
-		$input  = JFactory::getApplication()->input;
-		$filter = JFilterInput::getInstance();
+		$input  = Factory::getApplication()->input;
+		$filter = InputFilter::getInstance();
 
 		if (isset($data['metadata']) && isset($data['metadata']['author']))
 		{
@@ -639,7 +650,7 @@ class BlogModelArticle extends JModelAdmin
 					}
 					else
 					{
-						$data['urls'][$i] = JStringPunycode::urlToPunycode($url);
+						$data['urls'][$i] = PunycodeHelper::urlToPunycode($url);
 					}
 				}
 			}
@@ -679,20 +690,20 @@ class BlogModelArticle extends JModelAdmin
 		{
 			if ($data['alias'] == null)
 			{
-				if (JFactory::getConfig()->get('unicodeslugs') == 1)
+				if (Factory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$data['alias'] = JFilterOutput::stringURLUnicodeSlug($data['title']);
+					$data['alias'] = OutputFilter::stringURLUnicodeSlug($data['title']);
 				}
 				else
 				{
-					$data['alias'] = JFilterOutput::stringURLSafe($data['title']);
+					$data['alias'] = OutputFilter::stringURLSafe($data['title']);
 				}
 
-				$table = JTable::getInstance('Blog', 'Joomla\\CMS\\Table\\');
+				$table = Table::getInstance('Blog', 'Joomla\\CMS\\Table\\');
 
 				if ($table->load(array('alias' => $data['alias'], 'catid' => $data['catid'])))
 				{
-					$msg = JText::_('COM_BLOG_SAVE_WARNING');
+					$msg = Text::_('COM_BLOG_SAVE_WARNING');
 				}
 
 				list($title, $alias) = $this->generateNewTitle($data['catid'], $data['alias'], $data['title']);
@@ -700,7 +711,7 @@ class BlogModelArticle extends JModelAdmin
 
 				if (isset($msg))
 				{
-					JFactory::getApplication()->enqueueMessage($msg, 'warning');
+					Factory::getApplication()->enqueueMessage($msg, 'warning');
 				}
 			}
 		}
@@ -734,7 +745,7 @@ class BlogModelArticle extends JModelAdmin
 
 		if (empty($pks))
 		{
-			$this->setError(JText::_('COM_BLOG_NO_ITEM_SELECTED'));
+			$this->setError(Text::_('COM_BLOG_NO_ITEM_SELECTED'));
 
 			return false;
 		}
@@ -845,9 +856,9 @@ class BlogModelArticle extends JModelAdmin
 		}
 
 		// Association content items
-		if (JLanguageAssociations::isEnabled())
+		if (Associations::isEnabled())
 		{
-			$languages = JLanguageHelper::getContentLanguages(false, true, null, 'ordering', 'asc');
+			$languages = LanguageHelper::getContentLanguages(false, true, null, 'ordering', 'asc');
 
 			if (count($languages) > 1)
 			{
@@ -921,7 +932,7 @@ class BlogModelArticle extends JModelAdmin
 	 */
 	private function canCreateCategory()
 	{
-		return JFactory::getUser()->authorise('core.create', 'com_blog');
+		return Factory::getUser()->authorise('core.create', 'com_blog');
 	}
 
 	/**

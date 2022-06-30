@@ -9,15 +9,23 @@
 
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Version;
 
-JHtml::_('behavior.caption');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
+
+if(Version::MAJOR_VERSION < 4)
+{
+	HTMLHelper::_('behavior.caption');
+}
 ?>
 <div class="category-list<?php echo $this->pageclass_sfx; ?>">
 
 <?php
 $this->subtemplatename = 'articles';
-echo JLayoutHelper::render('joomla.content.category_default', $this);
+echo LayoutHelper::render('joomla.content.category_default', $this);
 ?>
 
 </div>

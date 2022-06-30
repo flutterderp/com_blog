@@ -9,23 +9,34 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Component\Content\Administrator\Extension\ContentComponent;
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Version;
+
 // Create a shortcut for params.
 $params     = $this->item->params;
-$tpl        = JFactory::getApplication()->getTemplate($tpl_params = true);
+$tpl        = Factory::getApplication()->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $canEdit    = $this->item->params->get('access-edit');
 $info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
-$assocParam = (JLanguageAssociations::isEnabled() && $params->get('show_associations'));
-
-$currentDate   = JFactory::getDate()->format('Y-m-d H:i:s');
-$isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentDate)
-	|| ($this->item->publish_down < $currentDate && $this->item->publish_down !== JFactory::getDbo()->getNullDate());
-
+$assocParam = (Associations::isEnabled() && $params->get('show_associations'));
+$currentDate          = Factory::getDate()->format('Y-m-d H:i:s');
+$nullDate             = Factory::getDbo()->getNullDate();
+$conditionUnpublished = $this->item->state == ((Version::MAJOR_VERSION === 4) ? ContentComponent::CONDITION_UNPUBLISHED : 0);
+$isNotPublishedYet    = $this->item->publish_up > $currentDate;
+$isExpired            = !is_null($this->item->publish_down) && $this->item->publish_down !== $nullDate && $this->item->publish_down < $currentDate;
 ?>
-<link itemprop="mainEntityOfPage" href="<?php echo JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
+<link itemprop="mainEntityOfPage" href="<?php echo Route::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>">
 <meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
 <meta itemprop="author" content="<?php echo $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author; ?>">
 <span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
@@ -36,21 +47,21 @@ $isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentD
 </span>
 
 <?php if(!$params->get('show_modify_date')) : ?>
-	<time datetime="<?php echo JHtml::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+	<time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
 <?php endif; ?>
 
 <?php if(!$params->get('show_publish_date')) : ?>
-	<time datetime="<?php echo JHtml::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+	<time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
 <?php endif; ?>
 
-<?php if ($isUnpublished) : ?>
+<?php if ($conditionUnpublished) : ?>
 	<div class="system-unpublished">
 <?php endif; ?>
 
-<?php echo JLayoutHelper::render('joomla.content.blog_style_default_item_title', $this->item); ?>
+<?php echo LayoutHelper::render('joomla.content.blog_style_default_item_title', $this->item); ?>
 
 <?php if ($canEdit || $params->get('show_print_icon') || $params->get('show_email_icon')) : ?>
-	<?php echo JLayoutHelper::render('joomla.content.icons', array('params' => $params, 'item' => $this->item, 'print' => false)); ?>
+	<?php echo LayoutHelper::render('joomla.content.icons', array('params' => $params, 'item' => $this->item, 'print' => false)); ?>
 <?php endif; ?>
 
 <?php // Todo Not that elegant would be nice to group the params ?>
@@ -59,13 +70,13 @@ $isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentD
 
 <?php if ($useDefList && ($info == 0 || $info == 2)) : ?>
 	<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
-	<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'above')); ?>
+	<?php echo LayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'above')); ?>
 <?php endif; ?>
 <?php if ($info == 0 && $params->get('show_tags', 1) && !empty($this->item->tags->itemTags)) : ?>
-	<?php echo JLayoutHelper::render('joomla.content.tags', $this->item->tags->itemTags); ?>
+	<?php echo LayoutHelper::render('joomla.content.tags', $this->item->tags->itemTags); ?>
 <?php endif; ?>
 
-<?php echo JLayoutHelper::render('joomla.content.intro_image', $this->item); ?>
+<?php echo LayoutHelper::render('joomla.content.intro_image', $this->item); ?>
 
 <?php if (!$params->get('show_intro')) : ?>
 	<?php // Blog is generated by content plugin event "onContentAfterTitle" ?>
@@ -80,29 +91,29 @@ $isUnpublished = ($this->item->state == 0 || $this->item->publish_up > $currentD
 <?php if ($info == 1 || $info == 2) : ?>
 	<?php if ($useDefList) : ?>
 		<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
-		<?php echo JLayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
+		<?php echo LayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
 	<?php endif; ?>
 	<?php if ($params->get('show_tags', 1) && !empty($this->item->tags->itemTags)) : ?>
-		<?php echo JLayoutHelper::render('joomla.content.tags', $this->item->tags->itemTags); ?>
+		<?php echo LayoutHelper::render('joomla.content.tags', $this->item->tags->itemTags); ?>
 	<?php endif; ?>
 <?php endif; ?>
 
 <?php if ($params->get('show_readmore') && $this->item->readmore) :
 	if ($params->get('access-view')) :
-		$link = JRoute::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language));
+		$link = Route::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language));
 	else :
-		$menu = JFactory::getApplication()->getMenu();
+		$menu = Factory::getApplication()->getMenu();
 		$active = $menu->getActive();
 		$itemId = $active->id;
-		$link = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . $itemId, false));
+		$link = new Uri(Route::_('index.php?option=com_users&view=login&Itemid=' . $itemId, false));
 		$link->setVar('return', base64_encode(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language)));
 	endif; ?>
 
-	<?php echo JLayoutHelper::render('joomla.content.readmore', array('item' => $this->item, 'params' => $params, 'link' => $link)); ?>
+	<?php echo LayoutHelper::render('joomla.content.readmore', array('item' => $this->item, 'params' => $params, 'link' => $link)); ?>
 
 <?php endif; ?>
 
-<?php if ($isUnpublished) : ?>
+<?php if ($conditionUnpublished) : ?>
 </div>
 <?php endif; ?>
 

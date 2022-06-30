@@ -9,6 +9,13 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\CMS\Version;
+
 /**
  * View to edit an article.
  *
@@ -72,7 +79,7 @@ class BlogViewArticle extends JViewLegacy
 		}
 
 		// If we are forcing a language in modal (used for associations).
-		if ($this->getLayout() === 'modal' && $forcedLanguage = JFactory::getApplication()->input->get('forcedLanguage', '', 'cmd'))
+		if ($this->getLayout() === 'modal' && $forcedLanguage = Factory::getApplication()->input->get('forcedLanguage', '', 'cmd'))
 		{
 			// Set the language field to the forcedLanguage and disable changing it.
 			$this->form->setValue('language', null, $forcedLanguage);
@@ -83,6 +90,11 @@ class BlogViewArticle extends JViewLegacy
 
 			// Only allow to select tags with All language or with the forced language.
 			$this->form->setFieldAttribute('tags', 'language', '*,' . $forcedLanguage);
+		}
+
+		if($this->getLayout() !== 'modal')
+		{
+			$tpl = (Version::MAJOR_VERSION === 4) ? 'jfour' : 'jthree';
 		}
 
 		$this->addToolbar();
@@ -99,8 +111,8 @@ class BlogViewArticle extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		JFactory::getApplication()->input->set('hidemainmenu', true);
-		$user       = JFactory::getUser();
+		Factory::getApplication()->input->set('hidemainmenu', true);
+		$user       = Factory::getUser();
 		$userId     = $user->id;
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
@@ -108,18 +120,18 @@ class BlogViewArticle extends JViewLegacy
 		// Built the actions for new and existing records.
 		$canDo = $this->canDo;
 
-		JToolbarHelper::title(
-			JText::_('COM_BLOG_PAGE_' . ($checkedOut ? 'VIEW_ARTICLE' : ($isNew ? 'ADD_ARTICLE' : 'EDIT_ARTICLE'))),
+		ToolbarHelper::title(
+			Text::_('COM_BLOG_PAGE_' . ($checkedOut ? 'VIEW_ARTICLE' : ($isNew ? 'ADD_ARTICLE' : 'EDIT_ARTICLE'))),
 			'pencil-2 article-add'
 		);
 
 		// For new records, check the create permission.
 		if ($isNew && (count($user->getAuthorisedCategories('com_blog', 'core.create')) > 0))
 		{
-			JToolbarHelper::apply('article.apply');
-			JToolbarHelper::save('article.save');
-			JToolbarHelper::save2new('article.save2new');
-			JToolbarHelper::cancel('article.cancel');
+			ToolbarHelper::apply('article.apply');
+			ToolbarHelper::save('article.save');
+			ToolbarHelper::save2new('article.save2new');
+			ToolbarHelper::cancel('article.cancel');
 		}
 		else
 		{
@@ -129,36 +141,36 @@ class BlogViewArticle extends JViewLegacy
 			// Can't save the record if it's checked out and editable
 			if (!$checkedOut && $itemEditable)
 			{
-				JToolbarHelper::apply('article.apply');
-				JToolbarHelper::save('article.save');
+				ToolbarHelper::apply('article.apply');
+				ToolbarHelper::save('article.save');
 
 				// We can save this record, but check the create permission to see if we can return to make a new one.
 				if ($canDo->get('core.create'))
 				{
-					JToolbarHelper::save2new('article.save2new');
+					ToolbarHelper::save2new('article.save2new');
 				}
 			}
 
 			// If checked out, we can still save
 			if ($canDo->get('core.create'))
 			{
-				JToolbarHelper::save2copy('article.save2copy');
+				ToolbarHelper::save2copy('article.save2copy');
 			}
 
-			if (JComponentHelper::isEnabled('com_bloghistory') && $this->state->params->get('save_history', 0) && $itemEditable)
+			if (ComponentHelper::isEnabled('com_bloghistory') && $this->state->params->get('save_history', 0) && $itemEditable)
 			{
-				JToolbarHelper::versions('com_blog.article', $this->item->id);
+				ToolbarHelper::versions('com_blog.article', $this->item->id);
 			}
 
-			if (JLanguageAssociations::isEnabled() && JComponentHelper::isEnabled('com_associations'))
+			if (Associations::isEnabled() && ComponentHelper::isEnabled('com_associations'))
 			{
-				JToolbarHelper::custom('article.editAssociations', 'contract', 'contract', 'JTOOLBAR_ASSOCIATIONS', false, false);
+				ToolbarHelper::custom('article.editAssociations', 'contract', 'contract', 'JTOOLBAR_ASSOCIATIONS', false, false);
 			}
 
-			JToolbarHelper::cancel('article.cancel', 'JTOOLBAR_CLOSE');
+			ToolbarHelper::cancel('article.cancel', 'JTOOLBAR_CLOSE');
 		}
 
-		JToolbarHelper::divider();
-		JToolbarHelper::help('JHELP_CONTENT_ARTICLE_MANAGER_EDIT');
+		ToolbarHelper::divider();
+		ToolbarHelper::help('JHELP_CONTENT_ARTICLE_MANAGER_EDIT');
 	}
 }

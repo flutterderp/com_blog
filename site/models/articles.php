@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
@@ -78,7 +83,7 @@ class BlogModelArticles extends JModelList
 	 */
 	protected function populateState($ordering = 'ordering', $direction = 'ASC')
 	{
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		// List state information
 		$value = $app->input->get('limit', $app->get('list_limit', 0), 'uint');
@@ -110,7 +115,7 @@ class BlogModelArticles extends JModelList
 
 		$params = $app->getParams();
 		$this->setState('params', $params);
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		if ((!$user->authorise('core.edit.state', 'com_blog')) && (!$user->authorise('core.edit', 'com_blog')))
 		{
@@ -118,10 +123,10 @@ class BlogModelArticles extends JModelList
 			$this->setState('filter.published', 1);
 		}
 
-		$this->setState('filter.language', JLanguageMultilang::isEnabled());
+		$this->setState('filter.language', Multilanguage::isEnabled());
 
 		// Process show_noauth parameter
-		if ((!$params->get('show_noauth')) || (!JComponentHelper::getParams('com_blog')->get('show_noauth')))
+		if ((!$params->get('show_noauth')) || (!ComponentHelper::getParams('com_blog')->get('show_noauth')))
 		{
 			$this->setState('filter.access', true);
 		}
@@ -180,7 +185,7 @@ class BlogModelArticles extends JModelList
 	protected function getListQuery()
 	{
 		// Get the current user for authorisation checks
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// Create a new query object.
 		$db    = $this->getDbo();
@@ -245,7 +250,7 @@ class BlogModelArticles extends JModelList
 		$query->select('parent.title as parent_title, parent.id as parent_id, parent.path as parent_route, parent.alias as parent_alias')
 			->join('LEFT', '#__categories as parent ON parent.id = c.parent_id');
 
-		if (JPluginHelper::isEnabled('content', 'vote'))
+		if (PluginHelper::isEnabled('content', 'vote'))
 		{
 			// Join on voting table
 			$query->select('COALESCE(NULLIF(ROUND(v.rating_sum  / v.rating_count, 0), 0), 0) AS rating,
@@ -436,7 +441,7 @@ class BlogModelArticles extends JModelList
 
 		// Define null and now dates
 		$nullDate = $db->quote($db->getNullDate());
-		$nowDate  = $db->quote(JFactory::getDate()->toSql());
+		$nowDate  = $db->quote(Factory::getDate()->toSql());
 
 		// Filter by start and end dates.
 		if ((!$user->authorise('core.edit.state', 'com_blog')) && (!$user->authorise('core.edit', 'com_blog')))
@@ -520,7 +525,7 @@ class BlogModelArticles extends JModelList
 		// Filter by language
 		if ($this->getState('filter.language'))
 		{
-			$query->where('a.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
+			$query->where('a.language IN (' . $db->quote(Factory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
 		}
 
 		// Filter by a single or group of tags.
@@ -574,14 +579,14 @@ class BlogModelArticles extends JModelList
 	public function getItems()
 	{
 		$items  = parent::getItems();
-		$user   = JFactory::getUser();
+		$user   = Factory::getUser();
 		$userId = $user->get('id');
 		$guest  = $user->get('guest');
 		$groups = $user->getAuthorisedViewLevels();
-		$input  = JFactory::getApplication()->input;
+		$input  = Factory::getApplication()->input;
 
 		// Get the global params
-		$globalParams = JComponentHelper::getParams('com_blog', true);
+		$globalParams = ComponentHelper::getParams('com_blog', true);
 
 		// Convert the parameter fields into objects.
 		foreach ($items as &$item)
@@ -702,7 +707,7 @@ class BlogModelArticles extends JModelList
 			// Some contexts may not use tags data at all, so we allow callers to disable loading tag data
 			if ($this->getState('load_tags', $item->params->get('show_tags', '1')))
 			{
-				$item->tags = new JHelperTags;
+				$item->tags = new TagsHelper;
 				$item->tags->getItemTags('com_blog.article', $item->id);
 			}
 

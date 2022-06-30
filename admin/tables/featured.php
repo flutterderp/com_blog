@@ -9,12 +9,14 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Table\Table;
+
 /**
  * Featured Table class.
  *
  * @since  1.6
  */
-class BlogTableFeatured extends JTable
+class BlogTableFeatured extends Table
 {
 	/**
 	 * Constructor

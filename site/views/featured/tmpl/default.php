@@ -9,9 +9,27 @@
 
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Version;
 
-JHtml::_('behavior.caption');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
+
+if(Version::MAJOR_VERSION < 4)
+{
+	HTMLHelper::_('behavior.caption');
+}
+
+if(Version::MAJOR_VERSION === 4)
+{
+	$pagesTotal = $this->pagination->pagesTotal;
+}
+else
+{
+	$pagesTotal = $this->pagination->get('pages.total');
+}
 
 // If the page class is defined, add to class as suffix.
 // It will be a separate class if the user starts it with a space
@@ -85,7 +103,7 @@ JHtml::_('behavior.caption');
 	</div>
 <?php endif; ?>
 
-<?php if ($this->params->def('show_pagination', 2) == 1  || ($this->params->get('show_pagination') == 2 && $this->pagination->pagesTotal > 1)) : ?>
+<?php if ($this->params->def('show_pagination', 2) == 1  || ($this->params->get('show_pagination') == 2 && $pagesTotal > 1)) : ?>
 	<div class="pagination">
 
 		<?php if ($this->params->def('show_pagination_results', 1)) : ?>

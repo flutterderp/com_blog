@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Multilanguage;
+
 JLoader::register('BlogHelper', JPATH_ADMINISTRATOR . '/components/com_blog/helpers/blog.php');
 JLoader::register('BlogHelperRoute', JPATH_SITE . '/components/com_blog/helpers/route.php');
 JLoader::register('CategoryHelperAssociation', JPATH_ADMINISTRATOR . '/components/com_categories/helpers/association.php');
@@ -33,7 +38,7 @@ abstract class BlogHelperAssociation extends CategoryHelperAssociation
 	 */
 	public static function getAssociations($id = 0, $view = null, $layout = null)
 	{
-		$jinput    = JFactory::getApplication()->input;
+		$jinput    = Factory::getApplication()->input;
 		$view      = $view === null ? $jinput->get('view') : $view;
 		$component = $jinput->getCmd('option');
 		$id        = empty($id) ? $jinput->getInt('id') : $id;
@@ -47,22 +52,22 @@ abstract class BlogHelperAssociation extends CategoryHelperAssociation
 		{
 			if ($id)
 			{
-				$user      = JFactory::getUser();
+				$user      = Factory::getUser();
 				$groups    = implode(',', $user->getAuthorisedViewLevels());
-				$db        = JFactory::getDbo();
+				$db        = Factory::getDbo();
 				$advClause = array();
 
 				// Filter by user groups
 				$advClause[] = 'c2.access IN (' . $groups . ')';
 
 				// Filter by current language
-				$advClause[] = 'c2.language != ' . $db->quote(JFactory::getLanguage()->getTag());
+				$advClause[] = 'c2.language != ' . $db->quote(Factory::getLanguage()->getTag());
 
 				if (!$user->authorise('core.edit.state', 'com_blog') && !$user->authorise('core.edit', 'com_blog'))
 				{
 					// Filter by start and end dates.
 					$nullDate = $db->quote($db->getNullDate());
-					$date = JFactory::getDate();
+					$date = Factory::getDate();
 
 					$nowDate = $db->quote($date->toSql());
 
@@ -73,7 +78,7 @@ abstract class BlogHelperAssociation extends CategoryHelperAssociation
 					$advClause[] = 'c2.state = 1';
 				}
 
-				$associations = JLanguageAssociations::getAssociations('com_blog', '#__blog', 'com_blog.item', $id, 'id', 'alias', 'catid', $advClause);
+				$associations = Associations::getAssociations('com_blog', '#__blog', 'com_blog.item', $id, 'id', 'alias', 'catid', $advClause);
 
 				$return = array();
 
@@ -109,8 +114,8 @@ abstract class BlogHelperAssociation extends CategoryHelperAssociation
 
 		if ($associations = self::getAssociations($id, 'article'))
 		{
-			$levels    = JFactory::getUser()->getAuthorisedViewLevels();
-			$languages = JLanguageHelper::getLanguages();
+			$levels    = Factory::getUser()->getAuthorisedViewLevels();
+			$languages = LanguageHelper::getLanguages();
 
 			foreach ($languages as $language)
 			{
@@ -121,13 +126,13 @@ abstract class BlogHelperAssociation extends CategoryHelperAssociation
 				}
 
 				// Do not display language without frontend UI
-				if (!array_key_exists($language->lang_code, JLanguageHelper::getInstalledLanguages(0)))
+				if (!array_key_exists($language->lang_code, LanguageHelper::getInstalledLanguages(0)))
 				{
 					continue;
 				}
 
 				// Do not display language without specific home menu
-				if (!array_key_exists($language->lang_code, JLanguageMultilang::getSiteHomePages()))
+				if (!array_key_exists($language->lang_code, Multilanguage::getSiteHomePages()))
 				{
 					continue;
 				}

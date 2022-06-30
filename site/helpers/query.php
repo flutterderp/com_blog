@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
+
 /**
  * Blog Component Query Helper
  *
@@ -110,13 +115,13 @@ class BlogHelperQuery
 				break;
 
 			case 'random' :
-				$orderby = JFactory::getDbo()->getQuery(true)->Rand();
+				$orderby = Factory::getDbo()->getQuery(true)->Rand();
 				break;
 
 			case 'vote' :
 				$orderby = 'a.id DESC ';
 
-				if (JPluginHelper::isEnabled('content', 'vote'))
+				if (PluginHelper::isEnabled('content', 'vote'))
 				{
 					$orderby = 'rating_count DESC ';
 				}
@@ -125,7 +130,7 @@ class BlogHelperQuery
 			case 'rvote' :
 				$orderby = 'a.id ASC ';
 
-				if (JPluginHelper::isEnabled('content', 'vote'))
+				if (PluginHelper::isEnabled('content', 'vote'))
 				{
 					$orderby = 'rating_count ASC ';
 				}
@@ -134,7 +139,7 @@ class BlogHelperQuery
 			case 'rank' :
 				$orderby = 'a.id DESC ';
 
-				if (JPluginHelper::isEnabled('content', 'vote'))
+				if (PluginHelper::isEnabled('content', 'vote'))
 				{
 					$orderby = 'rating DESC ';
 				}
@@ -143,7 +148,7 @@ class BlogHelperQuery
 			case 'rrank' :
 				$orderby = 'a.id ASC ';
 
-				if (JPluginHelper::isEnabled('content', 'vote'))
+				if (PluginHelper::isEnabled('content', 'vote'))
 				{
 					$orderby = 'rating ASC ';
 				}
@@ -168,7 +173,7 @@ class BlogHelperQuery
 	 */
 	public static function getQueryDate($orderDate)
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		switch ($orderDate)
 		{
@@ -206,7 +211,7 @@ class BlogHelperQuery
 	{
 		if (!$params)
 		{
-			$params = JComponentHelper::getParams('com_blog');
+			$params = ComponentHelper::getParams('com_blog');
 		}
 
 		$voting = $params->get('show_vote');

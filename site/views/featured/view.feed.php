@@ -9,6 +9,14 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories;
+use Joomla\CMS\Document\Feed\FeedItem;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Version;
+
 /**
  * Frontpage View class
  *
@@ -26,16 +34,16 @@ class BlogViewFeatured extends JViewLegacy
 	public function display($tpl = null)
 	{
 		// Parameters
-		$app       = JFactory::getApplication();
-		$doc       = JFactory::getDocument();
+		$app       = Factory::getApplication();
+		$doc       = Factory::getDocument();
 		$params    = $app->getParams();
 		$feedEmail = $app->get('feed_email', 'none');
 		$siteEmail = $app->get('mailfrom');
-		$doc->link = JRoute::_('index.php?option=com_blog&view=featured');
+		$doc->link = Route::_('index.php?option=com_blog&view=featured');
 
 		// Get some data from the model
 		$app->input->set('limit', $app->get('feed_limit'));
-		$categories = JCategories::getInstance('Blog');
+		$categories = Categories::getInstance('Blog');
 		$rows       = $this->get('Items');
 
 		foreach ($rows as $row)
@@ -64,14 +72,14 @@ class BlogViewFeatured extends JViewLegacy
 			$author      = $row->created_by_alias ?: $row->author;
 
 			// Load individual item creator class
-			$item           = new JFeedItem;
+			$item           = new FeedItem;
 			$item->title    = $title;
-			$item->link     = \JRoute::_($link);
+			$item->link     = \Route::_($link);
 			$item->date     = $row->publish_up;
 			$item->category = array();
 
 			// All featured articles are categorized as "Featured"
-			$item->category[] = JText::_('JFEATURED');
+			$item->category[] = Text::_('JFEATURED');
 
 			for ($item_category = $categories->get($row->catid); $item_category !== null; $item_category = $item_category->getParent())
 			{
@@ -96,7 +104,7 @@ class BlogViewFeatured extends JViewLegacy
 			// Add readmore link to description if introtext is shown, show_readmore is true and fulltext exists
 			if (!$params->get('feed_summary', 0) && $params->get('feed_show_readmore', 0) && $row->fulltext)
 			{
-				$description .= '<p class="feed-readmore"><a target="_blank" href ="' . $item->link . '">' . JText::_('COM_BLOG_FEED_READMORE') . '</a></p>';
+				$description .= '<p class="feed-readmore"><a target="_blank" href ="' . $item->link . '">' . Text::_('COM_BLOG_FEED_READMORE') . '</a></p>';
 			}
 
 			// Load item description and add div

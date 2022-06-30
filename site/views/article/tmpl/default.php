@@ -9,7 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Component\Content\Administrator\Extension\ContentComponent;
+// use Joomla\Component\Content\Site\Helper\RouteHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\OutputFilter;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\Language\Text;
@@ -17,27 +20,37 @@ use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Version;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
+$app        = Factory::getApplication();
 $doc        = Factory::getDocument();
-$params     = $this->item->params;
-$tpl        = Factory::getApplication()->getTemplate($tpl_params = true);
+$user       = Factory::getUser();
+$tpl        = $app->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
+$params     = $this->item->params;
 $urls       = json_decode($this->item->urls);
 $canEdit    = $params->get('access-edit');
-$user       = Factory::getUser();
 $info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
-$assocParam = (Associations::isEnabled() && $params->get('show_associations'));
-HTMLHelper::_('behavior.caption');
+$assocParam           = (Associations::isEnabled() && $params->get('show_associations'));
+$currentDate          = Factory::getDate()->format('Y-m-d H:i:s');
+$conditionUnpublished = (Version::MAJOR_VERSION === 4) ? ContentComponent::CONDITION_UNPUBLISHED : 0;
+$isNotPublishedYet    = $this->item->publish_up > $currentDate;
+$isExpired            = !is_null($this->item->publish_down) && $this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate();
 
-$currentDate       = Factory::getDate()->format('Y-m-d H:i:s');
-$isNotPublishedYet = $this->item->publish_up > $currentDate;
-$isExpired         = $this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate();
+if(Version::MAJOR_VERSION < 4)
+{
+	HTMLHelper::_('behavior.caption');
+}
 
+foreach($this->item->jcfields as $key => $field)
+{
+	$jcfields[$field->name] = $field;
+}
 ?>
 <div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Article">
 	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? Factory::getConfig()->get('language') : $this->item->language; ?>" />
@@ -85,7 +98,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 			<?php echo $this->escape($this->item->title); ?>
 		</h2>
 
-		<?php if ($this->item->state == 0) : ?>
+		<?php if ($this->item->state == $conditionUnpublished) : ?>
 			<span class="label label-warning"><?php echo Text::_('JUNPUBLISHED'); ?></span>
 		<?php endif; ?>
 		<?php if ($isNotPublishedYet) : ?>
@@ -131,6 +144,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 		|| (empty($urls->urls_position) && (!$params->get('urls_position')))) : ?>
 	<?php echo $this->loadTemplate('links'); ?>
 	<?php endif; ?>
+
 	<?php if ($params->get('access-view')) : ?>
 	<?php echo LayoutHelper::render('joomla.content.full_image', $this->item); ?>
 	<?php
@@ -202,9 +216,10 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 
 	<?php if ($info == 1 || $info == 2) : ?>
 		<?php if ($useDefList) : ?>
-				<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
+			<?php // Todo: for Joomla4 joomla.content.info_block.block can be changed to joomla.content.info_block ?>
 			<?php echo LayoutHelper::render('joomla.content.info_block.block', array('item' => $this->item, 'params' => $params, 'position' => 'below')); ?>
 		<?php endif; ?>
+
 		<?php if ($params->get('show_tags', 1) && !empty($this->item->tags->itemTags)) : ?>
 			<?php $this->item->tagLayout = new FileLayout('joomla.content.tags'); ?>
 			<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
@@ -216,6 +231,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 		echo $this->item->pagination;
 	?>
 	<?php endif; ?>
+
 	<?php if (isset($urls) && ((!empty($urls->urls_position) && ($urls->urls_position == '1')) || ($params->get('urls_position') == '1'))) : ?>
 	<?php echo $this->loadTemplate('links'); ?>
 	<?php endif; ?>
@@ -230,6 +246,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php $itemId = $active->id; ?>
 	<?php $link = new Uri(Route::_('index.php?option=com_users&view=login&Itemid=' . $itemId, false)); ?>
 	<?php $link->setVar('return', base64_encode(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language))); ?>
+
 	<?php echo LayoutHelper::render('joomla.content.readmore', array('item' => $this->item, 'params' => $params, 'link' => $link)); ?>
 	<?php endif; ?>
 	<?php endif; ?>

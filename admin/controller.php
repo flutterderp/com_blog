@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
+
 /**
  * Component Controller
  *
@@ -44,9 +49,9 @@ class BlogController extends JControllerLegacy
 		if ($view == 'article' && $layout == 'edit' && !$this->checkEditId('com_blog.edit.article', $id))
 		{
 			// Somehow the person just went to the form - we don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+			$this->setError(Text::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
 			$this->setMessage($this->getError(), 'error');
-			$this->setRedirect(JRoute::_('index.php?option=com_blog&view=articles', false));
+			$this->setRedirect(Route::_('index.php?option=com_blog&view=articles', false));
 
 			return false;
 		}

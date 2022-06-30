@@ -9,6 +9,18 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Associations;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\String\PunycodeHelper;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\UCM\UCMType;
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
 JLoader::register('BlogModelArticles', __DIR__ . '/articles.php');
@@ -75,7 +87,7 @@ class BlogModelFeatured extends BlogModelArticles
 		// Create a new query object.
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// Select the required fields from the table.
 		$query->select(
@@ -117,7 +129,7 @@ class BlogModelFeatured extends BlogModelArticles
 			->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
 		// Join on voting table
-		if (JPluginHelper::isEnabled('content', 'vote'))
+		if (PluginHelper::isEnabled('content', 'vote'))
 		{
 			$query->select('COALESCE(NULLIF(ROUND(v.rating_sum  / v.rating_count, 0), 0), 0) AS rating,
 							COALESCE(NULLIF(v.rating_count, 0), 0) as rating_count')
@@ -164,7 +176,7 @@ class BlogModelFeatured extends BlogModelArticles
 
 		if (is_array($categoryId) && count($categoryId) === 1)
 		{
-			$cat_tbl = JTable::getInstance('Category', 'JTable');
+			$cat_tbl = Table::getInstance('Category', 'Table');
 			$cat_tbl->load($categoryId[0]);
 			$rgt = $cat_tbl->rgt;
 			$lft = $cat_tbl->lft;

@@ -9,6 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Associations;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
@@ -40,7 +44,7 @@ class BlogModelForm extends BlogModelArticle
 	 */
 	protected function populateState()
 	{
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		// Load the parameters.
 		$params = $app->getParams();
@@ -99,7 +103,7 @@ class BlogModelForm extends BlogModelArticle
 		$value->params = new Registry($value->attribs);
 
 		// Compute selected asset permissions.
-		$user   = JFactory::getUser();
+		$user   = Factory::getUser();
 		$userId = $user->get('id');
 		$asset  = 'com_blog.article.' . $value->id;
 
@@ -154,7 +158,7 @@ class BlogModelForm extends BlogModelArticle
 
 		if ($itemId)
 		{
-			$value->tags = new JHelperTags;
+			$value->tags = new TagsHelper;
 			$value->tags->getTagIds($value->id, 'com_blog.article');
 			$value->metadata['tags'] = $value->tags;
 		}
@@ -186,8 +190,8 @@ class BlogModelForm extends BlogModelArticle
 	public function save($data)
 	{
 		// Associations are not edited in frontend ATM so we have to inherit them
-		if (JLanguageAssociations::isEnabled() && !empty($data['id'])
-			&& $associations = JLanguageAssociations::getAssociations('com_blog', '#__blog', 'com_blog.item', $data['id']))
+		if (Associations::isEnabled() && !empty($data['id'])
+			&& $associations = Associations::getAssociations('com_blog', '#__blog', 'com_blog.item', $data['id']))
 		{
 			foreach ($associations as $tag => $associated)
 			{
@@ -201,9 +205,9 @@ class BlogModelForm extends BlogModelArticle
 	}
 
 	/**
-	 * Allows preprocessing of the JForm object.
+	 * Allows preprocessing of the Form object.
 	 *
-	 * @param   JForm   $form   The form object
+	 * @param   Form   $form   The form object
 	 * @param   array   $data   The data to be merged into the form object
 	 * @param   string  $group  The plugin group to be executed
 	 *
@@ -211,7 +215,7 @@ class BlogModelForm extends BlogModelArticle
 	 *
 	 * @since   3.7.0
 	 */
-	protected function preprocessForm(JForm $form, $data, $group = 'blog')
+	protected function preprocessForm(Form $form, $data, $group = 'blog')
 	{
 		$params = $this->getState()->get('params');
 

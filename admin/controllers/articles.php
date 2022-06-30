@@ -9,6 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -52,7 +56,7 @@ class BlogControllerArticles extends JControllerAdmin
 		// Check for request forgeries
 		$this->checkToken();
 
-		$user   = JFactory::getUser();
+		$user   = Factory::getUser();
 		$ids    = (array) $this->input->get('cid', array(), 'int');
 		$values = array('featured' => 1, 'unfeatured' => 0);
 		$task   = $this->getTask();
@@ -73,7 +77,7 @@ class BlogControllerArticles extends JControllerAdmin
 			{
 				// Prune items that you can't change.
 				unset($ids[$i]);
-				JError::raiseNotice(403, JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+				throw new Exception(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), 403);
 			}
 		}
 
@@ -81,7 +85,7 @@ class BlogControllerArticles extends JControllerAdmin
 		{
 			$message = null;
 
-			JError::raiseWarning(500, JText::_('JERROR_NO_ITEMS_SELECTED'));
+			throw new Exception(Text::_('JERROR_NO_ITEMS_SELECTED'), 500);
 		}
 		else
 		{
@@ -92,16 +96,16 @@ class BlogControllerArticles extends JControllerAdmin
 			// Publish the items.
 			if (!$model->featured($ids, $value))
 			{
-				JError::raiseWarning(500, $model->getError());
+				throw new Exception($model->getError(), 500);
 			}
 
 			if ($value == 1)
 			{
-				$message = JText::plural('COM_BLOG_N_ITEMS_FEATURED', count($ids));
+				$message = Text::plural('COM_BLOG_N_ITEMS_FEATURED', count($ids));
 			}
 			else
 			{
-				$message = JText::plural('COM_BLOG_N_ITEMS_UNFEATURED', count($ids));
+				$message = Text::plural('COM_BLOG_N_ITEMS_UNFEATURED', count($ids));
 			}
 		}
 
@@ -109,11 +113,11 @@ class BlogControllerArticles extends JControllerAdmin
 
 		if ($view == 'featured')
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_blog&view=featured', false), $message);
+			$this->setRedirect(Route::_('index.php?option=com_blog&view=featured', false), $message);
 		}
 		else
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_blog&view=articles', false), $message);
+			$this->setRedirect(Route::_('index.php?option=com_blog&view=articles', false), $message);
 		}
 	}
 
