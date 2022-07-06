@@ -329,7 +329,15 @@ $assoc = Associations::isEnabled();
 			<?php if ($user->authorise('core.create', 'com_blog')
 				&& $user->authorise('core.edit', 'com_blog')
 				&& $user->authorise('core.edit.state', 'com_blog')) : ?>
-				<?php echo $this->loadTemplate('batch_body'); ?>
+				<?php echo HTMLHelper::_(
+					'bootstrap.renderModal',
+					'collapseModal',
+					array(
+						'title'  => Text::_('COM_BLOG_BATCH_OPTIONS'),
+						'footer' => $this->loadTemplate('batch_footer'),
+					),
+					$this->loadTemplate('batch_body')
+				); ?>
 			<?php endif; ?>
 		<?php endif; ?>
 

@@ -105,10 +105,10 @@ class BlogViewArticles extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		/* if ($this->getLayout() !== 'modal')
+		if ($this->getLayout() !== 'modal' && Version::MAJOR_VERSION < 4)
 		{
 			BlogHelper::addSubmenu('articles');
-		} */
+		}
 
 		$this->items         = $this->get('Items');
 		$this->pagination    = $this->get('Pagination');
