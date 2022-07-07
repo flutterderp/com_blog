@@ -196,6 +196,7 @@ class BlogModelArticles extends JModelList
 			$this->getState(
 				'list.select',
 				'a.id, a.title, a.alias, a.introtext, a.fulltext, ' .
+				'a.extra1, a.extra2, a.extra3, ' .
 				'a.checked_out, a.checked_out_time, ' .
 				'a.catid, a.created, a.created_by, a.created_by_alias, ' .
 				// Published/archived article in archive category is treats as archive article
