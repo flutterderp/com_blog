@@ -255,20 +255,19 @@ $assoc      = Associations::isEnabled();
 									<td class="text-center d-none d-md-table-cell">
 									<?php
 										$options = [
-											'task_prefix' => 'blog.',
+											'task_prefix' => 'articles.',
 											'disabled'    => $workflow_featured || !$canChange,
 											'id'          => 'featured-' . $item->id
 										];
 
-										echo (new FeaturedButton)
-											->render((int) $item->featured, $i, $options, null, null);
+										echo (new FeaturedButton)->render((int) $item->featured, $i, $options, null, null);
 									?>
 									</td>
 
 									<td class="article-status text-center">
 									<?php
 										$options = [
-											'task_prefix' => 'blog.',
+											'task_prefix' => 'articles.',
 											'disabled'    => $workflow_state || !$canChange,
 											'id'          => 'state-' . $item->id
 										];
