@@ -171,6 +171,12 @@ class BlogViewArticle extends JViewLegacy
 		}
 
 		ToolbarHelper::divider();
+
+		if (Version::MAJOR_VERSION === 4)
+		{
+			ToolbarHelper::inlinehelp();
+		}
+
 		ToolbarHelper::help('JHELP_CONTENT_ARTICLE_MANAGER_EDIT');
 	}
 }

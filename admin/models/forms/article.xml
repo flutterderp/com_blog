@@ -989,8 +989,8 @@
 			<field
 				name="image_fulltext_alt_empty"
 				type="checkbox"
-				label="COM_CONTENT_FIELD_IMAGE_ALT_EMPTY_LABEL"
-				description="COM_CONTENT_FIELD_IMAGE_ALT_EMPTY_DESC"
+				label="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_LABEL"
+				description="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_DESC"
 			/>
 
 			<field

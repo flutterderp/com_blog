@@ -78,8 +78,23 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 					</fieldset>
 				</div>
 
-				<div class="form-inline form-inline-header"><?php echo $this->form->renderField('video_uri'); ?></div>
+				<div>&nbsp;</div>
 
+				<div class="row">
+					<div class="col-lg-6">
+						<?php echo $this->form->renderField('video_uri'); ?>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3">
+				<?php echo LayoutHelper::render('joomla.edit.global', $this); ?>
+			</div>
+		</div>
+
+		<div>&nbsp;</div>
+
+		<div class="row">
+			<div class="col-lg-12">
 				<?php echo $this->form->renderField('gallery'); ?>
 
 				<?php echo $this->form->renderField('toggle_sources_type'); ?>
@@ -87,9 +102,6 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 				<?php echo $this->form->renderField('sources'); ?>
 
 				<?php echo $this->form->renderField('sources_blob'); ?>
-			</div>
-			<div class="col-lg-3">
-				<?php echo LayoutHelper::render('joomla.edit.global', $this); ?>
 			</div>
 		</div>
 
