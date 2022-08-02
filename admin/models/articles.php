@@ -302,7 +302,7 @@ class BlogModelArticles extends JModelList
 		if (count($categoryId))
 		{
 			$categoryId = ArrayHelper::toInteger($categoryId);
-			$categoryTable = Table::getInstance('Category', 'Table');
+			$categoryTable = Table::getInstance('Category', 'JTable');
 			$subCatItemsWhere = array();
 
 			foreach ($categoryId as $filter_catid)
