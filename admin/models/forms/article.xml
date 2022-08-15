@@ -3,6 +3,7 @@
 	<config>
 		<inlinehelp button="show"/>
 	</config>
+
 	<fieldset addfieldpath="/administrator/components/com_categories/models/fields" >
 		<field
 			name="id"
