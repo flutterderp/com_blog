@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
@@ -24,7 +25,7 @@ HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 HTMLHelper::_('behavior.formvalidator');
 HTMLHelper::_('behavior.keepalive');
 HTMLHelper::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0 ));
-HTMLHelper::_('formbehavior.chosen', '#jform_tags', null, array('placeholder_text_multiple' => JText::_('JGLOBAL_TYPE_OR_SELECT_SOME_TAGS')));
+HTMLHelper::_('formbehavior.chosen', '#jform_tags', null, array('placeholder_text_multiple' => Text::_('JGLOBAL_TYPE_OR_SELECT_SOME_TAGS')));
 HTMLHelper::_('formbehavior.chosen', 'select');
 
 $this->configFieldsets  = array('editorConfig');
@@ -71,7 +72,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 	<div class="form-horizontal">
 		<?php echo HTMLHelper::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>
 
-		<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'general', JText::_('COM_BLOG_ARTICLE_CONTENT')); ?>
+		<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'general', Text::_('COM_BLOG_ARTICLE_CONTENT')); ?>
 		<div class="row-fluid">
 			<div class="span9">
 				<fieldset class="adminform">
@@ -96,7 +97,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 
 		<?php // Do not show the images and links options if the edit form is configured not to. ?>
 		<?php if ($params->get('show_urls_images_backend') == 1) : ?>
-			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'images', JText::_('COM_BLOG_FIELDSET_URLS_AND_IMAGES')); ?>
+			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'images', Text::_('COM_BLOG_FIELDSET_URLS_AND_IMAGES')); ?>
 			<div class="row-fluid form-horizontal-desktop">
 				<div class="span6">
 					<?php echo $this->form->renderField('images'); ?>
@@ -118,7 +119,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 
 		<?php // Do not show the publishing options if the edit form is configured not to. ?>
 		<?php if ($params->get('show_publishing_options', 1) == 1) : ?>
-			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'publishing', JText::_('COM_BLOG_FIELDSET_PUBLISHING')); ?>
+			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'publishing', Text::_('COM_BLOG_FIELDSET_PUBLISHING')); ?>
 			<div class="row-fluid form-horizontal-desktop">
 				<div class="span6">
 					<?php echo LayoutHelper::render('joomla.edit.publishingdata', $this); ?>
@@ -132,7 +133,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 
 
 		<?php if ( ! $isModal && $assoc) : ?>
-			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'associations', JText::_('JGLOBAL_FIELDSET_ASSOCIATIONS')); ?>
+			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'associations', Text::_('JGLOBAL_FIELDSET_ASSOCIATIONS')); ?>
 			<?php echo $this->loadTemplate('associations'); ?>
 			<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 		<?php elseif ($isModal && $assoc) : ?>
@@ -140,13 +141,13 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 		<?php endif; ?>
 
 		<?php if ($this->canDo->get('core.admin')) : ?>
-			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'editor', JText::_('COM_BLOG_SLIDER_EDITOR_CONFIG')); ?>
+			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'editor', Text::_('COM_BLOG_SLIDER_EDITOR_CONFIG')); ?>
 			<?php echo $this->form->renderFieldset('editorConfig'); ?>
 			<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 		<?php endif; ?>
 
 		<?php if ($this->canDo->get('core.admin')) : ?>
-			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'permissions', JText::_('COM_BLOG_FIELDSET_RULES')); ?>
+			<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'permissions', Text::_('COM_BLOG_FIELDSET_RULES')); ?>
 				<?php echo $this->form->getInput('rules'); ?>
 			<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 		<?php endif; ?>
