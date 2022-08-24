@@ -29,7 +29,7 @@ $canEdit    = $this->item->params->get('access-edit');
 $info       = $params->get('info_block_position', 0);
 
 // Check if associations are implemented. If they are, define the parameter.
-$assocParam = (Associations::isEnabled() && $params->get('show_associations'));
+$assocParam           = (Associations::isEnabled() && $params->get('show_associations'));
 $currentDate          = Factory::getDate()->format('Y-m-d H:i:s');
 $nullDate             = Factory::getDbo()->getNullDate();
 $conditionUnpublished = $this->item->state == ((Version::MAJOR_VERSION === 4) ? ContentComponent::CONDITION_UNPUBLISHED : 0);
