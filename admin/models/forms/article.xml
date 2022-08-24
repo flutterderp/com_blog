@@ -927,90 +927,85 @@
 	/>
 
 	<fields name="images" label="COM_BLOG_FIELD_IMAGE_OPTIONS">
-		<fieldset name="image-intro" label="COM_BLOG_FIELD_INTRO_LABEL">
-			<field
-				name="image_intro"
-				type="media"
-				label="COM_BLOG_FIELD_INTRO_LABEL"
-				description="COM_BLOG_FIELD_INTRO_DESC"
-			/>
+		<field
+			name="image_intro"
+			type="media"
+			label="COM_BLOG_FIELD_INTRO_LABEL"
+			description="COM_BLOG_FIELD_INTRO_DESC"
+		/>
 
-			<field
-				name="float_intro"
-				type="list"
-				label="COM_BLOG_FLOAT_LABEL"
-				description="COM_BLOG_FLOAT_DESC"
-				useglobal="true"
-				>
-				<option value="right">COM_BLOG_RIGHT</option>
-				<option value="left">COM_BLOG_LEFT</option>
-				<option value="none">COM_BLOG_NONE</option>
-			</field>
+		<field
+			name="float_intro"
+			type="list"
+			label="COM_BLOG_FLOAT_LABEL"
+			description="COM_BLOG_FLOAT_DESC"
+			useglobal="true"
+			>
+			<option value="right">COM_BLOG_RIGHT</option>
+			<option value="left">COM_BLOG_LEFT</option>
+			<option value="none">COM_BLOG_NONE</option>
+		</field>
 
-			<field
-				name="image_intro_alt"
-				type="text"
-				label="COM_BLOG_FIELD_IMAGE_ALT_LABEL"
-				description="COM_BLOG_FIELD_IMAGE_ALT_DESC"
-			/>
+		<field
+			name="image_intro_alt"
+			type="text"
+			label="COM_BLOG_FIELD_IMAGE_ALT_LABEL"
+			description="COM_BLOG_FIELD_IMAGE_ALT_DESC"
+		/>
 
-			<field
-					name="image_intro_alt_empty"
-					type="checkbox"
-					label="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_LABEL"
-					description="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_DESC"
-				/>
-
-			<field
-				name="image_intro_caption"
-				type="text"
-				label="COM_BLOG_FIELD_IMAGE_CAPTION_LABEL"
-				description="COM_BLOG_FIELD_IMAGE_CAPTION_DESC"
-			/>
-
-		</fieldset>
-
-		<fieldset name="image-full" label="COM_BLOG_FIELD_FULL_LABEL">
-			<field
-				name="image_fulltext"
-				type="media"
-				label="COM_BLOG_FIELD_FULL_LABEL"
-				description="COM_BLOG_FIELD_FULL_DESC"
-			/>
-
-			<field
-				name="image_fulltext_alt"
-				type="text"
-				label="COM_BLOG_FIELD_IMAGE_ALT_LABEL"
-				description="COM_BLOG_FIELD_IMAGE_ALT_DESC"
-			/>
-
-			<field
-				name="image_fulltext_alt_empty"
+		<field
+				name="image_intro_alt_empty"
 				type="checkbox"
 				label="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_LABEL"
 				description="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_DESC"
 			/>
 
-			<field
-				name="float_fulltext"
-				type="list"
-				label="COM_BLOG_FLOAT_LABEL"
-				description="COM_BLOG_FLOAT_DESC"
-				useglobal="true"
-				>
-				<option value="right">COM_BLOG_RIGHT</option>
-				<option value="left">COM_BLOG_LEFT</option>
-				<option value="none">COM_BLOG_NONE</option>
-			</field>
+		<field
+			name="image_intro_caption"
+			type="text"
+			label="COM_BLOG_FIELD_IMAGE_CAPTION_LABEL"
+			description="COM_BLOG_FIELD_IMAGE_CAPTION_DESC"
+		/>
 
-			<field
-				name="image_fulltext_caption"
-				type="text"
-				label="COM_BLOG_FIELD_IMAGE_CAPTION_LABEL"
-				description="COM_BLOG_FIELD_IMAGE_CAPTION_DESC"
-			/>
-		</fieldset>
+		<field
+			name="image_fulltext"
+			type="media"
+			label="COM_BLOG_FIELD_FULL_LABEL"
+			description="COM_BLOG_FIELD_FULL_DESC"
+		/>
+
+		<field
+			name="image_fulltext_alt"
+			type="text"
+			label="COM_BLOG_FIELD_IMAGE_ALT_LABEL"
+			description="COM_BLOG_FIELD_IMAGE_ALT_DESC"
+		/>
+
+		<field
+			name="image_fulltext_alt_empty"
+			type="checkbox"
+			label="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_LABEL"
+			description="COM_BLOG_FIELD_IMAGE_ALT_EMPTY_DESC"
+		/>
+
+		<field
+			name="float_fulltext"
+			type="list"
+			label="COM_BLOG_FLOAT_LABEL"
+			description="COM_BLOG_FLOAT_DESC"
+			useglobal="true"
+			>
+			<option value="right">COM_BLOG_RIGHT</option>
+			<option value="left">COM_BLOG_LEFT</option>
+			<option value="none">COM_BLOG_NONE</option>
+		</field>
+
+		<field
+			name="image_fulltext_caption"
+			type="text"
+			label="COM_BLOG_FIELD_IMAGE_CAPTION_LABEL"
+			description="COM_BLOG_FIELD_IMAGE_CAPTION_DESC"
+		/>
 
 		<field
 			name="spacer1"
