@@ -51,6 +51,11 @@ foreach($this->item->jcfields as $key => $field)
 {
 	$jcfields[$field->name] = $field;
 }
+
+// Add canonical link to HTML header (uncomment in an override if needed)
+/* $uri  = Uri::getInstance();
+$root = $uri->getScheme() . '://' . $uri->getHost();
+$doc->addCustomTag('<link href="' . $root . Route::_(BlogHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)) . '" rel="canonical">'); */
 ?>
 <article class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Article">
 	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? Factory::getConfig()->get('language') : $this->item->language; ?>" />

@@ -151,6 +151,7 @@ else
 			<?php if ($this->params->def('show_pagination_results', 1)) : ?>
 				<p class="counter pull-right"> <?php echo $this->pagination->getPagesCounter(); ?> </p>
 			<?php endif; ?>
-			<?php echo $this->pagination->getPaginationLinks(); ?> </div>
+			<?php echo $this->pagination->getPaginationLinks(); ?>
+		</div>
 	<?php endif; ?>
 </div>
