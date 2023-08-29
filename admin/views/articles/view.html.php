@@ -222,7 +222,7 @@ class BlogViewArticles extends JViewLegacy
 				$toolbar->addNew('article.add');
 			}
 
-			if (!$this->isEmptyState && ($canDo->get('core.edit.state') || \count($this->transitions)))
+			if (!$this->isEmptyState && ($canDo->get('core.edit.state') || \count((array) $this->transitions)))
 			{
 				$dropdown = $toolbar->dropdownButton('status-group')
 					->text('JTOOLBAR_CHANGE_STATUS')
