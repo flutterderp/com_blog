@@ -24,6 +24,7 @@ if(Version::MAJOR_VERSION < 4)
 }
 
 $app    = Factory::getApplication();
+$jfours = array(4,5);
 $offset = $app->get('list.offset', 0);
 
 $this->category->text = $this->category->description;
@@ -39,7 +40,7 @@ $beforeDisplayContent = trim(implode("\n", $results));
 $results = $app->triggerEvent('onContentAfterDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $afterDisplayContent = trim(implode("\n", $results));
 
-if(Version::MAJOR_VERSION === 4)
+if(in_array(Version::MAJOR_VERSION, $jfours))
 {
 	$pagesTotal = $this->pagination->pagesTotal;
 }
@@ -90,18 +91,18 @@ else
 
 	<?php $leadingcount = 0; ?>
 	<?php if (!empty($this->lead_items)) : ?>
-		<article class="items-leading clearfix">
+		<div class="items-leading clearfix">
 			<?php foreach ($this->lead_items as &$item) : ?>
-				<div class="leading-<?php echo $leadingcount; ?><?php echo $item->state == 0 ? ' system-unpublished' : null; ?>"
+				<article class="leading-<?php echo $leadingcount; ?><?php echo $item->state == 0 ? ' system-unpublished' : null; ?>"
 					itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
 					<?php
 					$this->item = &$item;
 					echo $this->loadTemplate('item');
 					?>
-				</div>
+				</article>
 				<?php $leadingcount++; ?>
 			<?php endforeach; ?>
-		</article><!-- end items-leading -->
+		</div><!-- end items-leading -->
 	<?php endif; ?>
 
 	<?php
@@ -116,17 +117,17 @@ else
 				<?php $row = $counter / $this->columns; ?>
 				<div class="items-row cols-<?php echo (int) $this->columns; ?> <?php echo 'row-' . $row; ?> row-fluid clearfix">
 			<?php endif; ?>
-			<article class="span<?php echo round(12 / $this->columns); ?>">
-				<div class="item column-<?php echo $rowcount; ?><?php echo $item->state == 0 ? ' system-unpublished' : null; ?>"
+			<div class="span<?php echo round(12 / $this->columns); ?>">
+				<article class="item column-<?php echo $rowcount; ?><?php echo $item->state == 0 ? ' system-unpublished' : null; ?>"
 					itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
 					<?php
 					$this->item = &$item;
 					echo $this->loadTemplate('item');
 					?>
-				</div>
+				</article>
 				<!-- end item -->
 				<?php $counter++; ?>
-			</article><!-- end span -->
+			</div><!-- end span -->
 			<?php if (($rowcount == $this->columns) or ($counter == $introcount)) : ?>
 				</div><!-- end row -->
 			<?php endif; ?>

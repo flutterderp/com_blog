@@ -94,7 +94,9 @@ class BlogViewArticle extends JViewLegacy
 
 		if($this->getLayout() !== 'modal')
 		{
-			$tpl = (Version::MAJOR_VERSION === 4) ? 'jfour' : 'jthree';
+			$jfours = array(4,5);
+			$tpl = (in_array(Version::MAJOR_VERSION, $jfours)) ? 'jfour' : 'jthree';
+			// $tpl = (Version::MAJOR_VERSION === 4) ? 'jfour' : 'jthree';
 		}
 
 		$this->addToolbar();
@@ -113,6 +115,7 @@ class BlogViewArticle extends JViewLegacy
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
 		$user       = Factory::getUser();
+		$jfours     = array(4,5);
 		$userId     = $user->id;
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
@@ -172,7 +175,7 @@ class BlogViewArticle extends JViewLegacy
 
 		ToolbarHelper::divider();
 
-		if (Version::MAJOR_VERSION === 4)
+		if (in_array(Version::MAJOR_VERSION, $jfours))
 		{
 			ToolbarHelper::inlinehelp();
 		}

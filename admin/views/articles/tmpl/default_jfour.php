@@ -23,6 +23,11 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\Utilities\ArrayHelper;
 
+/** @var \Joomla\CMS\WebAsset\WebAssetManager $wa */
+$wa = $this->document->getWebAssetManager();
+$wa->useScript('table.columns')
+	->useScript('multiselect');
+
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
 $app       = Factory::getApplication();

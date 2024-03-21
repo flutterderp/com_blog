@@ -28,6 +28,7 @@ HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 $app        = Factory::getApplication();
 $doc        = Factory::getDocument();
 $user       = Factory::getUser();
+$jfours     = array(4,5);
 $tpl        = $app->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
 $params     = $this->item->params;
@@ -38,7 +39,7 @@ $info       = $params->get('info_block_position', 0);
 // Check if associations are implemented. If they are, define the parameter.
 $assocParam           = (Associations::isEnabled() && $params->get('show_associations'));
 $currentDate          = Factory::getDate()->format('Y-m-d H:i:s');
-$conditionUnpublished = (Version::MAJOR_VERSION === 4) ? ContentComponent::CONDITION_UNPUBLISHED : 0;
+$conditionUnpublished = (in_array(Version::MAJOR_VERSION, $jfours)) ? ContentComponent::CONDITION_UNPUBLISHED : 0;
 $isNotPublishedYet    = $this->item->publish_up > $currentDate;
 $isExpired            = !is_null($this->item->publish_down) && $this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate();
 
@@ -206,15 +207,17 @@ $doc->addCustomTag('<link href="' . $root . Route::_(BlogHelperRoute::getArticle
 		<?php endif; ?>
 
 		<?php if ($params->get('show_image_gallery_frontend') && !empty($this->item->gallery)) : ?>
-			<div class="row small-up-2 medium-up-3 large-up-4" data-equalizer>
-				<?php foreach($this->item->gallery as $img) : ?>
-					<div class="column" data-equalizer-watch>
-						<a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
-							rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
-							<img src="<?php echo Uri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
-						</a>
-					</div>
-				<?php endforeach; ?>
+			<div class="grid-container">
+				<div class="grid-x grid-padding-x small-up-2 medium-up-3 large-up-4" data-equalizer>
+					<?php foreach($this->item->gallery as $img) : ?>
+						<div class="cell" data-equalizer-watch>
+							<a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
+								rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
+								<img src="<?php echo Uri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
+							</a>
+						</div>
+					<?php endforeach; ?>
+				</div>
 			</div>
 		<?php endif; ?>
 	</div>
