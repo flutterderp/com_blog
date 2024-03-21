@@ -119,8 +119,9 @@ class BlogViewArticles extends JViewLegacy
 		$this->vote          = PluginHelper::isEnabled('content', 'vote');
 		$this->hits          = ComponentHelper::getParams('com_blog')->get('record_hits', 1);
 		$this->transitions   = null;
+		$jfours              = array(4,5);
 
-		if (Version::MAJOR_VERSION === 4)
+		if (in_array(Version::MAJOR_VERSION, $jfours))
 		{
 			if (!\count($this->items) && $this->isEmptyState = $this->get('IsEmptyState'))
 			{
@@ -158,7 +159,7 @@ class BlogViewArticles extends JViewLegacy
 			HTMLHelper::_('select.option', '10', Text::_('J10')),
 		);
 
-		$tpl = (Version::MAJOR_VERSION === 4) ? 'jfour' : 'jthree';
+		$tpl = (in_array(Version::MAJOR_VERSION, $jfours)) ? 'jfour' : 'jthree';
 
 		// We don't need toolbar in the modal window.
 		if ($this->getLayout() !== 'modal')
@@ -207,15 +208,16 @@ class BlogViewArticles extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = BlogHelper::getActions('com_blog', 'category', $this->state->get('filter.category_id'));
-		$user  = Version::MAJOR_VERSION === 4 ? Factory::getApplication()->getIdentity() : Factory::getUser();
+		$jfours = array(4,5);
+		$canDo  = BlogHelper::getActions('com_blog', 'category', $this->state->get('filter.category_id'));
+		$user   = in_array(Version::MAJOR_VERSION, $jfours) ? Factory::getApplication()->getIdentity() : Factory::getUser();
 
 		// Get the toolbar object instance
 		$toolbar = Toolbar::getInstance('toolbar');
 
 		ToolbarHelper::title(Text::_('COM_BLOG_ARTICLES_TITLE'), 'stack article');
 
-		if (Version::MAJOR_VERSION === 4)
+		if (in_array(Version::MAJOR_VERSION, $jfours))
 		{
 			if ($canDo->get('core.create') || \count($user->getAuthorisedCategories('com_blog', 'core.create')) > 0)
 			{
