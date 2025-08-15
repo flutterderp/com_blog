@@ -18,13 +18,13 @@ use Joomla\CMS\Version;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 
-if(Version::MAJOR_VERSION < 4)
+if (Version::MAJOR_VERSION < 4)
 {
 	HTMLHelper::_('behavior.caption');
 }
 
 $app    = Factory::getApplication();
-$jfours = array(4,5);
+$jfours = [4,5];
 $offset = $app->get('list.offset', 0);
 
 $this->category->text = $this->category->description;
@@ -40,7 +40,7 @@ $beforeDisplayContent = trim(implode("\n", $results));
 $results = $app->triggerEvent('onContentAfterDisplay', array($this->category->extension . '.categories', &$this->category, &$this->params, $offset));
 $afterDisplayContent = trim(implode("\n", $results));
 
-if(in_array(Version::MAJOR_VERSION, $jfours))
+if (in_array(Version::MAJOR_VERSION, $jfours))
 {
 	$pagesTotal = $this->pagination->pagesTotal;
 }

@@ -28,7 +28,7 @@ HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers');
 $app        = Factory::getApplication();
 $doc        = Factory::getDocument();
 $user       = Factory::getUser();
-$jfours     = array(4,5);
+$jfours     = [4,5];
 $tpl        = $app->getTemplate($tpl_params = true);
 $tpl_params = $tpl->params;
 $params     = $this->item->params;
@@ -43,7 +43,7 @@ $conditionUnpublished = (in_array(Version::MAJOR_VERSION, $jfours)) ? ContentCom
 $isNotPublishedYet    = $this->item->publish_up > $currentDate;
 $isExpired            = !is_null($this->item->publish_down) && $this->item->publish_down < $currentDate && $this->item->publish_down !== Factory::getDbo()->getNullDate();
 
-if(Version::MAJOR_VERSION < 4)
+if (Version::MAJOR_VERSION < 4)
 {
 	HTMLHelper::_('behavior.caption');
 }
@@ -69,11 +69,11 @@ $doc->addCustomTag('<link href="' . $root . Route::_(BlogHelperRoute::getArticle
 		</span>
 	</span>
 
-	<?php if(!$params->get('show_modify_date')) : ?>
+	<?php if (!$params->get('show_modify_date')) : ?>
 		<time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
 	<?php endif; ?>
 
-	<?php if(!$params->get('show_publish_date')) : ?>
+	<?php if (!$params->get('show_publish_date')) : ?>
 		<time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
 	<?php endif; ?>
 
@@ -162,7 +162,7 @@ $doc->addCustomTag('<link href="' . $root . Route::_(BlogHelperRoute::getArticle
 		echo $this->item->toc;
 	endif; ?>
 	<div itemprop="articleBody">
-		<?php if(!empty($this->item->video->uri)) : ?>
+		<?php if (!empty($this->item->video->uri)) : ?>
 			<div class="videowrapper">
 				<iframe src="<?php echo $this->item->video->uri; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 			</div>
@@ -170,27 +170,27 @@ $doc->addCustomTag('<link href="' . $root . Route::_(BlogHelperRoute::getArticle
 
 		<?php echo $this->item->text; ?>
 
-		<?php if(!empty($this->item->sources) || $this->item->sources_blob) : ?>
+		<?php if (!empty($this->item->sources) || $this->item->sources_blob) : ?>
 			<h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-right"></span></h2>
 
 			<div class="sources" id="articleSources">
-				<?php if((int) $this->item->toggle_sources_type === 1) : ?>
+				<?php if ((int) $this->item->toggle_sources_type === 1) : ?>
 					<ol>
 						<?php foreach($this->item->sources as $source) : ?>
 							<?php
 							$source_text   = array();
 
-							if($source['source_title'])
+							if ($source['source_title'])
 							{
 								$source_text[] = nl2br($this->escape($source['source_title']));
 							}
 
-							if($source['source_publish_date'])
+							if ($source['source_publish_date'])
 							{
 								$source_text[] = $this->escape($source['source_publish_date']);
 							}
 
-							if($source['source_url'])
+							if ($source['source_url'])
 							{
 								$source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
 							}

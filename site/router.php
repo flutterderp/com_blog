@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Categories\Categories;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Component\Router\RouterView;
 use Joomla\CMS\Component\Router\RouterViewConfiguration;
 use Joomla\CMS\Component\Router\Rules\MenuRules;
 use Joomla\CMS\Component\Router\Rules\NomenuRules;
@@ -22,7 +23,7 @@ use Joomla\CMS\Factory;
  *
  * @since  3.3
  */
-class BlogRouter extends JComponentRouterView
+class BlogRouter extends RouterView
 {
 	protected $noIDs = false;
 
