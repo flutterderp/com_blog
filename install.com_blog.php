@@ -54,16 +54,17 @@ class com_blogInstallerScript
 	 */
 	function postflight($type, $parent)
 	{
-		$app = Factory::getApplication();
+		$app    = Factory::getApplication();
+		$jfours = [4,5];
 
-		if($type == 'install')
+		if ($type == 'install')
 		{
 			$app->enqueueMessage('Running postflight…', 'warning');
 
 			Folder::create(JPATH_SITE . '/images/blog/gallery');
 
 			// Create categories for our component
-			if(Version::MAJOR_VERSION === 4)
+			if (in_array(Version::MAJOR_VERSION, $jfours))
 			{
 				$cat_model = AdminModel::getInstance('Category', 'CategoriesModel');
 			}
@@ -79,7 +80,7 @@ class com_blogInstallerScript
 			, 'title' => 'Uncategorised', 'alias' => 'uncategorised', 'description' => '', 'published' => 1, 'language' => '*');
 			$status   = $cat_model->save($cat_data);
 
-			if(!$status)
+			if (!$status)
 			{
 				$app->enqueueMessage('Unable to create default content category.', 'warning');
 			}
