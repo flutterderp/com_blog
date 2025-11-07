@@ -15,6 +15,9 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Blog\Site\Helper\RouteHelper;
 
 $app = Factory::getApplication();
 
@@ -34,6 +37,11 @@ $afterDisplayContent = trim(implode("\n", $results));
 
 $htag    = $this->params->get('show_page_heading') ? 'h2' : 'h1';
 
+// Add canonical link to HTML header (uncomment in an override if needed)
+$doc  = Factory::getDocument();
+$uri  = Uri::getInstance();
+$root = $uri->getScheme() . '://' . $uri->getHost();
+$doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRoute($this->category->id, $this->category->language)) . '" rel="canonical">');
 ?>
 <div class="com-blog-category-blog blog">
     <?php if ($this->params->get('show_page_heading')) : ?>

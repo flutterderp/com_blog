@@ -58,7 +58,6 @@
 		<files folder="admin">
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
-			<filename>blog.xml</filename>
 			<folder>forms</folder>
 			<folder>helpers</folder>
 			<folder>layouts</folder>

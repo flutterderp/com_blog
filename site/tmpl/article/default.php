@@ -36,10 +36,7 @@ $isNotPublishedYet = $this->item->publish_up > $currentDate;
 $isExpired         = !is_null($this->item->publish_down) && $this->item->publish_down < $currentDate;
 
 // Add canonical link to HTML header (uncomment in an override if needed)
-$doc  = Factory::getDocument();
-$uri  = Uri::getInstance();
-$root = $uri->getScheme() . '://' . $uri->getHost();
-$doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language)) . '" rel="canonical">');
+Factory::getDocument()->addHeadLink(Route::_(RouteHelper::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language)), 'canonical', 'rel');
 
 $registry            = new Joomla\Registry\Registry($this->item->sources);
 $this->item->sources = $registry->toArray();
@@ -53,8 +50,14 @@ $this->item->gallery = $registry->toArray();
     <span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
         <meta itemprop="name" content="<?php echo $this->escape($this->item->author); ?>">
     </span>
-    <time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
-    <time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+
+    <?php if (!$params->get('show_modify_date')) : ?>
+        <time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+    <?php endif; ?>
+
+    <?php if (!$params->get('show_publish_date')) : ?>
+        <time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+    <?php endif; ?>
     <?php if ($this->params->get('show_page_heading')) : ?>
     <div class="page-header">
         <h1> <?php echo $this->escape($this->params->get('page_heading')); ?> </h1>
@@ -70,7 +73,7 @@ $this->item->gallery = $registry->toArray();
 
     <?php if ($params->get('show_title')) : ?>
     <div class="page-header">
-        <<?php echo $htag; ?>>
+        <<?php echo $htag; ?> itemprop="headline">
             <?php echo $this->escape($this->item->title); ?>
         </<?php echo $htag; ?>>
         <?php if ($this->item->state == BlogComponent::CONDITION_UNPUBLISHED) : ?>
@@ -83,6 +86,8 @@ $this->item->gallery = $registry->toArray();
             <span class="badge bg-warning text-light"><?php echo Text::_('JEXPIRED'); ?></span>
         <?php endif; ?>
     </div>
+    <?php else : ?>
+        <meta itemprop="headline" content="<?php echo $this->escape($this->item->title); ?>">
     <?php endif; ?>
     <?php if ($canEdit) : ?>
         <?php echo LayoutHelper::render('joomla.content.icons', ['params' => $params, 'item' => $this->item]); ?>

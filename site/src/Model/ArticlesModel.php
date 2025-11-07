@@ -197,7 +197,8 @@ class ArticlesModel extends ListModel
 
         $query = $db->getQuery(true);
 
-        $nowDate = Factory::getDate()->toSql();
+        $nowDate  = Factory::getDate()->toSql();
+        $nullDate = $db->getNullDate();
 
         $conditionArchived    = BlogComponent::CONDITION_ARCHIVED;
         $conditionUnpublished = BlogComponent::CONDITION_UNPUBLISHED;

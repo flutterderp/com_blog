@@ -8,7 +8,6 @@
 use Joomla\CMS\Application\AdministratorApplication;
 use Joomla\Database\ParameterType;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
@@ -18,6 +17,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Filesystem\File;
+use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Exception\FilesystemException;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -95,6 +95,24 @@ return new class () implements ServiceProviderInterface {
 				public function update(InstallerAdapter $adapter): bool
 				{
 					$this->app->enqueueMessage('Updating component…', 'info');
+
+					// Delete the old SQL files/folders if they exist
+					if (Folder::exists(JPATH_ADMINISTRATOR . '/components/com_blog/sql/updates'))
+					{
+						$this->app->enqueueMessage('Deleting legacy SQL update directory…', 'info');
+
+						Folder::delete(JPATH_ADMINISTRATOR . '/components/com_blog/sql/updates');
+					}
+
+					if (File::exists(JPATH_ADMINISTRATOR . '/components/com_blog/sql/install.mysql.utf8.sql'))
+					{
+						File::delete(JPATH_ADMINISTRATOR . '/components/com_blog/sql/install.mysql.utf8.sql');
+					}
+
+					if (File::exists(JPATH_ADMINISTRATOR . '/components/com_blog/sql/uninstall.mysql.utf8.sql'))
+					{
+						File::delete(JPATH_ADMINISTRATOR . '/components/com_blog/sql/uninstall.mysql.utf8.sql');
+					}
 
 					return true;
 				}

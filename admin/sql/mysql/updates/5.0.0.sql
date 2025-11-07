@@ -23,6 +23,8 @@ MODIFY COLUMN `access` int unsigned NOT NULL DEFAULT 0 AFTER `metadesc`,
 MODIFY COLUMN `hits` int unsigned NOT NULL DEFAULT 0 AFTER `access`,
 MODIFY COLUMN `featured` tinyint unsigned NOT NULL DEFAULT 0 COMMENT 'Set if article is featured.' AFTER `metadata`;
 
+UPDATE `#__blog` SET `publish_down` = NULL WHERE `publish_down` = '0000-00-00 00:00:00';
+
 -- --------------------------------------------------------
 
 -- drop the xreference key

@@ -44,8 +44,13 @@ $isUnpublished = ($this->item->state == BlogComponent::CONDITION_UNPUBLISHED || 
         <meta itemprop="name" content="<?php echo $this->escape($this->item->author); ?>">
     </span>
 
-    <time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
-    <time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+    <?php if (!$params->get('show_modify_date')) : ?>
+        <time datetime="<?php echo HTMLHelper::_('date', ($this->item->modified ? $this->item->modified : $this->item->publish_up), 'c'); ?>" itemprop="dateModified"></time>
+    <?php endif; ?>
+
+    <?php if (!$params->get('show_publish_date')) : ?>
+        <time datetime="<?php echo HTMLHelper::_('date', $this->item->publish_up, 'c'); ?>" itemprop="datePublished"></time>
+    <?php endif; ?>
     <?php if ($isUnpublished) : ?>
         <div class="system-unpublished">
     <?php endif; ?>
