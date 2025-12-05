@@ -96,6 +96,12 @@ return new class () implements ServiceProviderInterface {
 				{
 					$this->app->enqueueMessage('Updating component…', 'info');
 
+					// Delete the admin/helpers/html folder if it still exists
+					if (Folder::exists(JPATH_ADMINISTRATOR . '/components/com_blog/helpers/html'))
+					{
+						Folder::delete(JPATH_ADMINISTRATOR . '/components/com_blog/helpers/html');
+					}
+
 					// Delete the old SQL files/folders if they exist
 					if (Folder::exists(JPATH_ADMINISTRATOR . '/components/com_blog/sql/updates'))
 					{
@@ -126,6 +132,8 @@ return new class () implements ServiceProviderInterface {
 
 				public function preflight(string $type, InstallerAdapter $adapter): bool
 				{
+					// $this->app->enqueueMessage('Running preflight…', 'warning');
+
 					if (version_compare(PHP_VERSION, $this->minimumPhp, '<'))
 					{
 						$this->app->enqueueMessage(sprintf(Text::_('JLIB_INSTALLER_MINIMUM_PHP'), $this->minimumPhp), 'error');
@@ -140,6 +148,13 @@ return new class () implements ServiceProviderInterface {
 						return false;
 					}
 
+					if ($type == 'update' && File::exists(JPATH_CACHE . '/autoload_psr4.php'))
+					{
+						$this->app->enqueueMessage('Clearing autoload cache…', 'info');
+
+						File::delete(JPATH_CACHE . '/autoload_psr4.php');
+					}
+
 					/**
 					 * We might need this to remove some of the workflow entries on uninstall…
 					 */
@@ -150,7 +165,6 @@ return new class () implements ServiceProviderInterface {
 
 				public function postflight(string $type, InstallerAdapter $adapter): bool
 				{
-					// $app = $this->app;
 					$this->app->enqueueMessage('Running postflight…', 'warning');
 
 					if ($type == 'install')
@@ -256,6 +270,7 @@ return new class () implements ServiceProviderInterface {
 
 						try
 						{
+							// Get the workflow's ID
 							$query->clear();
 							$query
 								->select('id')
@@ -265,8 +280,19 @@ return new class () implements ServiceProviderInterface {
 							$this->db->setQuery($query);
 							$w_id = (int) $this->db->loadResult();
 
-							if (version_compare($this->prev_release, '5.0.0', '<'))
+							$query->clear();
+							$query
+								->select('id, title')
+								->from($this->db->quoteName('#__workflow_stages'))
+								->where('workflow_id = :w_id')
+								->bind(':w_id', $w_id);
+							$this->db->setQuery($query);
+							$tmp_stage = $this->db->loadObject();
+
+							if (version_compare($this->prev_release, '5.0.0', '<=') && empty($tmp_stage))
 							{
+								$this->app->enqueueMessage('Add workflow transitions and a basic stage…', 'info');
+
 								// Add workflow transitions and a basic stage
 								$query->clear();
 								$query->select('MAX(ordering)')->from($this->db->quoteName('#__workflow_stages'));
