@@ -43,7 +43,7 @@ $uri  = Uri::getInstance();
 $root = $uri->getScheme() . '://' . $uri->getHost();
 $doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRoute($this->category->id, $this->category->language)) . '" rel="canonical">');
 ?>
-<div class="com-blog-category-blog blog">
+<div class="com-blog-category-blog blog" itemscope itemtype="https://schema.org/Blog">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
             <h1> <?php echo $this->escape($this->params->get('page_heading')); ?> </h1>
@@ -90,15 +90,17 @@ $doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRou
         <?php endif; ?>
     <?php endif; ?>
 
+    <?php $leadingcount = 0; ?>
     <?php if (!empty($this->lead_items)) : ?>
         <div class="com-blog-category-blog__items blog-items items-leading <?php echo $this->params->get('content_class_leading'); ?>">
             <?php foreach ($this->lead_items as &$item) : ?>
-                <article class="com-blog-category-blog__item blog-item" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+                <article class="com-blog-category-blog__item blog-item leading-<?php echo $leadingcount; ?>" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
                     <?php
                     $this->item = &$item;
                     echo $this->loadTemplate('item');
                     ?>
                 </article>
+                <?php $leadingcount++; ?>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
@@ -113,7 +115,7 @@ $doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRou
         <?php foreach ($this->intro_items as $key => &$item) : ?>
             <article class="com-blog-category-blog__item blog-item" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
                     <?php
-                    $this->item = & $item;
+                    $this->item = &$item;
                     echo $this->loadTemplate('item');
                     ?>
             </article>
@@ -139,7 +141,7 @@ $doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRou
         <?php echo HTMLHelper::_('blogicon.create', $this->category, $this->category->params); ?>
     <?php endif; ?>
     <?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->pagesTotal > 1)) : ?>
-        <div class="com-blog-category-blog__navigation w-100">
+        <div class="com-blog-category-blog__navigation pagination w-100">
             <?php if ($this->params->def('show_pagination_results', 1)) : ?>
                 <p class="com-blog-category-blog__counter counter float-md-end pt-3 pe-2">
                     <?php echo $this->pagination->getPagesCounter(); ?>

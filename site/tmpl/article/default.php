@@ -35,6 +35,10 @@ $currentDate       = Factory::getDate()->format('Y-m-d H:i:s');
 $isNotPublishedYet = $this->item->publish_up > $currentDate;
 $isExpired         = !is_null($this->item->publish_down) && $this->item->publish_down < $currentDate;
 
+foreach ($this->item->jcfields as $key => $field) {
+    $jcfields[$field->name] = $field;
+}
+
 // Add canonical link to HTML header (uncomment in an override if needed)
 Factory::getDocument()->addHeadLink(Route::_(RouteHelper::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language)), 'canonical', 'rel');
 
@@ -77,13 +81,13 @@ $this->item->gallery = $registry->toArray();
             <?php echo $this->escape($this->item->title); ?>
         </<?php echo $htag; ?>>
         <?php if ($this->item->state == BlogComponent::CONDITION_UNPUBLISHED) : ?>
-            <span class="badge bg-warning text-light"><?php echo Text::_('JUNPUBLISHED'); ?></span>
+            <span class="label label-warning text-light"><?php echo Text::_('JUNPUBLISHED'); ?></span>
         <?php endif; ?>
         <?php if ($isNotPublishedYet) : ?>
-            <span class="badge bg-warning text-light"><?php echo Text::_('JNOTPUBLISHEDYET'); ?></span>
+            <span class="label label-warning text-light"><?php echo Text::_('JNOTPUBLISHEDYET'); ?></span>
         <?php endif; ?>
         <?php if ($isExpired) : ?>
-            <span class="badge bg-warning text-light"><?php echo Text::_('JEXPIRED'); ?></span>
+            <span class="label label-warning text-light"><?php echo Text::_('JEXPIRED'); ?></span>
         <?php endif; ?>
     </div>
     <?php else : ?>
@@ -122,7 +126,7 @@ $this->item->gallery = $registry->toArray();
         <?php if (isset($this->item->toc)) :
             echo $this->item->toc;
         endif; ?>
-    <div class="com-blog-article__body">
+    <div class="com-blog-article__body" itemprop="articleBody">
         <?php if (!empty($this->item->video->uri)) : ?>
             <div class="videowrapper">
                 <iframe src="<?php echo $this->item->video->uri; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -141,18 +145,15 @@ $this->item->gallery = $registry->toArray();
                             <?php
                             $source_text = [];
 
-                            if ($source['source_title'])
-                            {
+                            if ($source['source_title']) {
                                 $source_text[] = nl2br($this->escape($source['source_title']));
                             }
 
-                            if ($source['source_publish_date'])
-                            {
+                            if ($source['source_publish_date']) {
                                 $source_text[] = $this->escape($source['source_publish_date']);
                             }
 
-                            if ($source['source_url'])
-                            {
+                            if ($source['source_url']) {
                                 $source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
                             }
 
