@@ -21,7 +21,7 @@ use Joomla\Component\Blog\Site\Helper\RouteHelper;
 
 /** @var \Joomla\Component\Blog\Site\View\Category\HtmlView $this */
 // Create a shortcut for params.
-$params = $this->item->params;
+$params  = $this->item->params;
 $canEdit = $this->item->params->get('access-edit');
 $info    = $params->get('info_block_position', 0);
 
