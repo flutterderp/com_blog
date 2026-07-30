@@ -40,7 +40,7 @@ foreach ($this->item->jcfields as $key => $field) {
 }
 
 // Add canonical link to HTML header (uncomment in an override if needed)
-Factory::getDocument()->addHeadLink(Route::_(RouteHelper::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language)), 'canonical', 'rel');
+$this->getDocument()->addHeadLink(Route::_(RouteHelper::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language)), 'canonical', 'rel');
 
 $registry            = new Joomla\Registry\Registry($this->item->sources);
 $this->item->sources = $registry->toArray();
@@ -126,63 +126,63 @@ $this->item->gallery = $registry->toArray();
         <?php if (isset($this->item->toc)) :
             echo $this->item->toc;
         endif; ?>
-    <div class="com-blog-article__body" itemprop="articleBody">
-        <?php if (!empty($this->item->video->uri)) : ?>
-            <div class="videowrapper">
-                <iframe src="<?php echo $this->item->video->uri; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        <?php endif; ?>
-
-        <?php echo $this->item->text; ?>
-
-        <?php if (!empty($this->item->sources) || $this->item->sources_blob) : ?>
-            <h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-right"></span></h2>
-
-            <div class="sources" id="articleSources">
-                <?php if ((int) $this->item->toggle_sources_type === 1 && \is_array($this->item->sources)) : ?>
-                    <ol>
-                        <?php foreach ($this->item->sources as $source) : ?>
-                            <?php
-                            $source_text = [];
-
-                            if ($source['source_title']) {
-                                $source_text[] = nl2br($this->escape($source['source_title']));
-                            }
-
-                            if ($source['source_publish_date']) {
-                                $source_text[] = $this->escape($source['source_publish_date']);
-                            }
-
-                            if ($source['source_url']) {
-                                $source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
-                            }
-
-                            $source_text = implode(' ', $source_text);
-                            ?>
-                            <li><?php echo $source_text; ?></li>
-                        <?php endforeach; ?>
-                    </ol>
-                <?php else : ?>
-                    <?php echo $this->item->sources_blob; ?>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($params->get('show_image_gallery_frontend') && \is_array($this->item->gallery) && !empty($this->item->gallery)) : ?>
-            <div class="grid-container">
-                <div class="grid-x grid-padding-x small-up-2 medium-up-3 large-up-4" data-equalizer>
-                    <?php foreach ($this->item->gallery as $img) : ?>
-                        <div class="cell" data-equalizer-watch>
-                            <a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
-                                rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
-                                <img src="<?php echo Uri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
+        <div class="com-blog-article__body" itemprop="articleBody">
+            <?php if (!empty($this->item->video->uri)) : ?>
+                <div class="videowrapper">
+                    <iframe src="<?php echo $this->item->video->uri; ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
-            </div>
-        <?php endif; ?>
-    </div>
+            <?php endif; ?>
+
+            <?php echo $this->item->text; ?>
+
+            <?php if (!empty($this->item->sources) || $this->item->sources_blob) : ?>
+                <h2 class="source-toggle" id="sourceToggle"><?php echo Text::_('COM_BLOG_HEADING_SOURCES'); ?> <span class="fa fa-angle-right"></span></h2>
+
+                <div class="sources" id="articleSources">
+                    <?php if ((int) $this->item->toggle_sources_type === 1 && \is_array($this->item->sources)) : ?>
+                        <ol>
+                            <?php foreach ($this->item->sources as $source) : ?>
+                                <?php
+                                $source_text = [];
+
+                                if ($source['source_title']) {
+                                    $source_text[] = nl2br($this->escape($source['source_title']));
+                                }
+
+                                if ($source['source_publish_date']) {
+                                    $source_text[] = $this->escape($source['source_publish_date']);
+                                }
+
+                                if ($source['source_url']) {
+                                    $source_text[] = '<a href="' . $source['source_url'] . '" target="_blank" rel="noopener noreferrer">' . $this->escape($source['source_url']) . '</a>';
+                                }
+
+                                $source_text = implode(' ', $source_text);
+                                ?>
+                                <li><?php echo $source_text; ?></li>
+                            <?php endforeach; ?>
+                        </ol>
+                    <?php else : ?>
+                        <?php echo $this->item->sources_blob; ?>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($params->get('show_image_gallery_frontend') && \is_array($this->item->gallery) && !empty($this->item->gallery)) : ?>
+                <div class="grid-container">
+                    <div class="grid-x grid-padding-x small-up-2 medium-up-3 large-up-4" data-equalizer>
+                        <?php foreach ($this->item->gallery as $img) : ?>
+                            <div class="cell" data-equalizer-watch>
+                                <a href="<?php echo $img['gallery_image']; ?>" class="jcepopup" target="_blank"
+                                    rel="caption['<?php echo json_encode($img['gallery_caption']); ?>'];group['gallery']">
+                                    <img src="<?php echo Uri::root() . $img['gallery_image']; ?>" alt="<?php echo pathinfo($img['gallery_image'], PATHINFO_FILENAME); ?>">
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
 
         <?php if ($info == 1 || $info == 2) : ?>
             <?php if ($useDefList) : ?>

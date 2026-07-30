@@ -38,7 +38,7 @@ $afterDisplayContent = trim(implode("\n", $results));
 $htag    = $this->params->get('show_page_heading') ? 'h2' : 'h1';
 
 // Add canonical link to HTML header (uncomment in an override if needed)
-$doc  = Factory::getDocument();
+$doc  = $this->getDocument();
 $uri  = Uri::getInstance();
 $root = $uri->getScheme() . '://' . $uri->getHost();
 $doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRoute($this->category->id, $this->category->language)) . '" rel="canonical">');
@@ -114,10 +114,10 @@ $doc->addCustomTag('<link href="' . $root . Route::_(RouteHelper::getCategoryRou
         <div class="com-blog-category-blog__items blog-items <?php echo $blogClass; ?>">
         <?php foreach ($this->intro_items as $key => &$item) : ?>
             <article class="com-blog-category-blog__item blog-item" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-                    <?php
-                    $this->item = &$item;
-                    echo $this->loadTemplate('item');
-                    ?>
+                <?php
+                $this->item = &$item;
+                echo $this->loadTemplate('item');
+                ?>
             </article>
         <?php endforeach; ?>
         </div>
